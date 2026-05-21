@@ -1,63 +1,48 @@
-# AWS Discovery Report — Account `118535197059`
+# CloudoX AWS Discovery Report
 
-> **Public Example Report — Sanitized**
->
-> This discovery report is a sanitized public demonstration produced by [CloudoX](https://cloudox.io).
->
-> **What was changed:**
-> - AWS account IDs replaced with synthetic 12-digit numbers.
-> - All resource IDs (VPC, subnet, security group, IAM role, internet gateway, route table,
->   VPC endpoint, ENI, EIP, ACL, etc.) replaced with deterministic synthetic equivalents
->   that preserve the correct prefix, length, and hex/alphanumeric format.
-> - Organisation IDs and CloudFormation bucket suffixes replaced.
-> - Company and employer names replaced with a generic placeholder.
-> - All replacements are internally consistent — a resource ID replaced in one file
->   matches its replacement everywhere else in the report.
->
-> **What was kept:**
-> - AWS service names, resource types, and regions.
-> - Architecture patterns, relationships between resources, networking topology.
-> - Security findings, exposure analysis, and observability gaps.
-> - Workload structure and discovery-engine output quality.
->
-> The report demonstrates what a real CloudoX discovery engagement looks like
-> without exposing any real infrastructure or customer data.
+> **Demo Report** — This discovery report was produced from a real AWS environment by
+> [CloudoX](https://cloudox.io). AWS account IDs and all resource identifiers (VPC,
+> subnet, security group, IAM role IDs, KMS key IDs, and similar) have been replaced
+> with deterministic synthetic equivalents so the report can be shared publicly.
+> Architecture patterns, workload structure, findings, and service configurations are
+> otherwise unmodified — this is not dummy data.
 
 ---
 
-**Snapshot scope:** 1 account · 1 environment (sandbox, high-confidence explicit classification) · 277 total resources · 7 findings · 2 workloads detected
+**Organization:** `o-aaaapzvebq` · **Management account:** `110319895932` (alias: `CloudoX`)
+**Snapshot scope:** 7 accounts · 7 environments · 800 resources · 9 findings · 5 workloads
 
 ---
 
-## Report Index
+## Document Index
 
 | File | Purpose |
 |------|---------|
-| [01-executive-summary.md](01-executive-summary.md) | Give leadership and consultants a quick understanding of the AWS environment. |
-| [02-architecture-overview.md](02-architecture-overview.md) | Explain the architecture patterns visible from the discovery data. |
-| [03-environment-structure.md](03-environment-structure.md) | Explain account, region, environment, and ownership structure. |
-| [04-networking.md](04-networking.md) | Explain the discovered network architecture. |
-| [05-security-overview.md](05-security-overview.md) | Summarize visible security posture from discovered configuration. |
-| [06-observability.md](06-observability.md) | Summarize logging, monitoring, and operational visibility signals. |
-| [07-findings-and-risks.md](07-findings-and-risks.md) | List practical findings, risks, and follow-up items. |
-| [08-assumptions-and-unknowns.md](08-assumptions-and-unknowns.md) | Make uncertainty explicit. |
+| [`01-executive-summary.md`](01-executive-summary.md) | Give leadership and consultants a quick understanding of the AWS environment. |
+| [`02-architecture-overview.md`](02-architecture-overview.md) | Explain the architecture patterns visible from the discovery data. |
+| [`03-environment-structure.md`](03-environment-structure.md) | Explain account, region, environment, and ownership structure. |
+| [`04-networking.md`](04-networking.md) | Explain the discovered network architecture. |
+| [`05-security-overview.md`](05-security-overview.md) | Summarize visible security posture from discovered configuration. |
+| [`06-observability.md`](06-observability.md) | Summarize logging, monitoring, and operational visibility signals. |
+| [`07-findings-and-risks.md`](07-findings-and-risks.md) | List practical findings, risks, and follow-up items. |
+| [`08-assumptions-and-unknowns.md`](08-assumptions-and-unknowns.md) | Make uncertainty explicit. |
 
 ---
 
 ## How to Read This Report
 
-**Observed facts** are drawn directly from discovery data — resource properties, tags, relationships, configuration fields, or findings. Every material claim cites a resource identifier, field name, or finding ID.
+**Observed fact** — a value directly present in the discovery data (a resource property, tag, relationship, finding, or digest field). Cited by resource ID, ARN, tag, or finding ID.
 
-**Inferred observations** are labelled with cautious language: *"appears to"*, *"suggests"*, or *"based on available evidence"*. They require validation with the customer.
+**Inferred observation** — a reasonable interpretation of observed facts, but not directly stated in the data. Phrased as "appears to", "suggests", or "based on available evidence". Should be validated with the customer.
 
-**Assumptions** are stated explicitly with a basis and a validation step. They are not presented as facts.
+**Assumption** — a working premise adopted where data is absent. Each assumption states its basis and how to confirm it.
 
-**"No evidence found for …"** means the discovery data did not contain the relevant signal. It does not mean a control is absent or unnecessary — only that it was not observed in the snapshot.
+**Unknown / Gap** — data that was not present in the discovery snapshot. Absence of evidence is not treated as evidence of absence. Where data is missing, the report writes "No evidence found for …" rather than drawing a conclusion.
 
-Resource presence (e.g. a GuardDuty detector, a CloudTrail trail) is noted as the resource existing. Whether the underlying service is active or correctly configured is stated only when a status field in the data confirms it.
+Severity and priority labels are only applied where the discovery data provides an explicit basis. Where no explicit severity exists, findings are labelled with a "Follow-up priority" column and the basis is explained.
 
 ---
 
 ## Disclaimer
 
-This report is generated solely from AWS discovery data captured at a single point in time. It reflects the state of account `118535197059` at the moment of discovery. It does not represent a continuous audit, a penetration test, or a compliance assessment. Configuration, resources, and risk posture may have changed since the snapshot was taken.
+This report is generated solely from AWS discovery data collected at snapshot time. It reflects the state of the environment at the moment of discovery and may not represent the current configuration. No data has been inferred beyond what the discovery context supports. Resource presence does not imply service enablement or active use unless a status field explicitly confirms it.
