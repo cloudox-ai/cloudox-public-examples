@@ -1,48 +1,28 @@
-# CloudoX AWS Discovery Report
+# CloudoX — Example Cloud Discovery Report
 
-> **Demo Report** — This discovery report was produced from a real AWS environment by
-> [CloudoX](https://cloudox.io). AWS account IDs and all resource identifiers (VPC,
-> subnet, security group, IAM role IDs, KMS key IDs, and similar) have been replaced
-> with deterministic synthetic equivalents so the report can be shared publicly.
-> Architecture patterns, workload structure, findings, and service configurations are
-> otherwise unmodified — this is not dummy data.
+This repository is a **public, sanitized example** of a cloud discovery report produced by [CloudoX](https://cloudox.io) — an intelligent cloud knowledge platform that turns a real cloud environment into evidence-grounded, stakeholder-ready understanding.
 
----
+> **About this example** — It was generated from a **real AWS environment** and then sanitized for public sharing: every account ID, organization ID, and resource identifier (VPC, subnet, security group, IAM role, KMS key, …) — including the identifiers drawn inside the architecture **diagrams** — has been replaced with deterministic synthetic equivalents. Architecture patterns, workload structure, findings, and service configurations are otherwise unmodified — **this is not dummy data**.
 
-**Organization:** `o-aaaapzvebq` · **Management account:** `110319895932` (alias: `CloudoX`)
-**Snapshot scope:** 7 accounts · 7 environments · 800 resources · 9 findings · 5 workloads
+## How to read it
 
----
+CloudoX presents one environment as **audience lenses** ("Knowledge Views") over a single shared understanding — different explanations and priorities for different readers, **never different truths**.
 
-## Document Index
+Start with the **[Knowledge Views index](./views/README.md)**, then open the view that matches your question:
 
-| File | Purpose |
-|------|---------|
-| [`01-executive-summary.md`](01-executive-summary.md) | Give leadership and consultants a quick understanding of the AWS environment. |
-| [`02-architecture-overview.md`](02-architecture-overview.md) | Explain the architecture patterns visible from the discovery data. |
-| [`03-environment-structure.md`](03-environment-structure.md) | Explain account, region, environment, and ownership structure. |
-| [`04-networking.md`](04-networking.md) | Explain the discovered network architecture. |
-| [`05-security-overview.md`](05-security-overview.md) | Summarize visible security posture from discovered configuration. |
-| [`06-observability.md`](06-observability.md) | Summarize logging, monitoring, and operational visibility signals. |
-| [`07-findings-and-risks.md`](07-findings-and-risks.md) | List practical findings, risks, and follow-up items. |
-| [`08-assumptions-and-unknowns.md`](08-assumptions-and-unknowns.md) | Make uncertainty explicit. |
+| View | Best for |
+| --- | --- |
+| [Generic](./views/generic/README.md) | Any technical reader |
+| [Executive](./views/executive/README.md) | CTO / Engineering leadership |
+| [Architect](./views/architect/README.md) | Solutions / Cloud Architects |
+| [Operations](./views/operations/README.md) | Platform / Operations Engineers |
+| [Security](./views/security/README.md) | Security & Governance teams |
+| [FinOps](./views/finops/README.md) | FinOps / Finance |
 
----
+Each view is a self-contained folder: its `README.md` is the composed view, every section is also a standalone Markdown file, and `diagrams/` holds the rendered architecture diagrams.
 
-## How to Read This Report
+## About CloudoX
 
-**Observed fact** — a value directly present in the discovery data (a resource property, tag, relationship, finding, or digest field). Cited by resource ID, ARN, tag, or finding ID.
+CloudoX discovers a cloud environment, builds a typed knowledge graph of what exists and how it connects, interprets it into architecture, networking, security, and cost meaning, and narrates that understanding for each audience — so a team can understand an unfamiliar environment in minutes instead of weeks.
 
-**Inferred observation** — a reasonable interpretation of observed facts, but not directly stated in the data. Phrased as "appears to", "suggests", or "based on available evidence". Should be validated with the customer.
-
-**Assumption** — a working premise adopted where data is absent. Each assumption states its basis and how to confirm it.
-
-**Unknown / Gap** — data that was not present in the discovery snapshot. Absence of evidence is not treated as evidence of absence. Where data is missing, the report writes "No evidence found for …" rather than drawing a conclusion.
-
-Severity and priority labels are only applied where the discovery data provides an explicit basis. Where no explicit severity exists, findings are labelled with a "Follow-up priority" column and the basis is explained.
-
----
-
-## Disclaimer
-
-This report is generated solely from AWS discovery data collected at snapshot time. It reflects the state of the environment at the moment of discovery and may not represent the current configuration. No data has been inferred beyond what the discovery context supports. Resource presence does not imply service enablement or active use unless a status field explicitly confirms it.
+Learn more at **[cloudox.io](https://cloudox.io)**.

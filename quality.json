@@ -1,0 +1,98 @@
+{
+  "content_hash": "e568ea94f2d415bc55ba5f54e052ff47da93ddbce6c7a8e0e527a9c6a39d1d18",
+  "counts_by_dimension": [
+    {
+      "count": 4,
+      "dimension": "hollow_sections"
+    },
+    {
+      "count": 4,
+      "dimension": "signal_to_noise"
+    }
+  ],
+  "errors": {},
+  "finding_count": 8,
+  "findings_relpath": "findings.json",
+  "generated_at": "2026-06-18T14:26:02.645983+00:00",
+  "grade": "B",
+  "overall_relpath": "overall.json",
+  "overall_score": 89.98,
+  "provider": "aws",
+  "review_relpath": null,
+  "schema_version": 1,
+  "scope": {
+    "accounts": [],
+    "cloud_scope_id": null,
+    "regions": [],
+    "run_id": null,
+    "run_seq": null,
+    "tenant_id": null,
+    "workspace_slug": "cloudox-demo"
+  },
+  "source_intelligence_ref": "knowledge-intelligence/index.json",
+  "source_views_ref": "knowledge-views/index.json",
+  "strongest_view": "executive",
+  "views": [
+    {
+      "content_hash": "3239d9826105640b954dba7383bb0433814a2d52ea5e902c5f684931d00880dd",
+      "display_name": "Architect",
+      "finding_count": 1,
+      "grade": "B",
+      "overall_score": 89.26,
+      "persona_coverage_ratio": 1.0,
+      "relpath": "architect.json",
+      "view": "architect"
+    },
+    {
+      "content_hash": "35ea87ce9930747fb80e7a7af719ec27e178aea4e7daea96e31f815d24a70ec9",
+      "display_name": "Executive",
+      "finding_count": 0,
+      "grade": "A",
+      "overall_score": 98.09,
+      "persona_coverage_ratio": 1.0,
+      "relpath": "executive.json",
+      "view": "executive"
+    },
+    {
+      "content_hash": "54959f9f3ffdb106da015042126fcbb5af0a3219467d2713cf8c8247fb5cff64",
+      "display_name": "FinOps",
+      "finding_count": 2,
+      "grade": "A",
+      "overall_score": 90.72,
+      "persona_coverage_ratio": 1.0,
+      "relpath": "finops.json",
+      "view": "finops"
+    },
+    {
+      "content_hash": "dd49238ad066041ea2fdc49bbd59a9fa1bae6af3966cae850d0a9d9c6cc789f2",
+      "display_name": "Generic",
+      "finding_count": 1,
+      "grade": "B",
+      "overall_score": 89.59,
+      "persona_coverage_ratio": 1.0,
+      "relpath": "generic.json",
+      "view": "generic"
+    },
+    {
+      "content_hash": "e05143a7132d114396e5e78c72dec84251d3c64f492cf40e9f0a1f55931ce0e1",
+      "display_name": "Operations",
+      "finding_count": 2,
+      "grade": "B",
+      "overall_score": 85.47,
+      "persona_coverage_ratio": 1.0,
+      "relpath": "operations.json",
+      "view": "operations"
+    },
+    {
+      "content_hash": "24b8d030d1b62c6ee37b89f92b5f7e13d873f9c7f975ce21d467899639d056e7",
+      "display_name": "Security",
+      "finding_count": 2,
+      "grade": "B",
+      "overall_score": 86.74,
+      "persona_coverage_ratio": 1.0,
+      "relpath": "security.json",
+      "view": "security"
+    }
+  ],
+  "weakest_view": "operations"
+}

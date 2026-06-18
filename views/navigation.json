@@ -1,0 +1,1100 @@
+{
+  "default_view": "generic",
+  "errors": {},
+  "generated_at": "2026-06-18T12:18:20.922665+00:00",
+  "kind": "knowledge-view-navigation",
+  "narrated": true,
+  "provider": "aws",
+  "schema_version": 2,
+  "views": [
+    {
+      "ai_section_count": 9,
+      "audience": "Solutions / Cloud Architects",
+      "confidence_display": "summary",
+      "content_hash": "31c1cd59070f759db894119913cba6aa95e981feb7af7a83c6f14618ce04cdf9",
+      "depth": "detailed",
+      "display_name": "Architect",
+      "fallback_section_count": 0,
+      "output_relpath": "views/architect/README.md",
+      "overall_confidence": "Likely",
+      "persona_questions": [
+        "What design issues exist?",
+        "What dependencies matter?",
+        "What modernization opportunities exist?"
+      ],
+      "section_count": 9,
+      "sections": [
+        {
+          "anchor": "architecture-overview",
+          "confidence": "Likely",
+          "content_hash": "296aab68d705a473bb25fb20ab2cfd97a3471d12f867e1c56a52a19cc264d596",
+          "empty": false,
+          "entity_count": 6,
+          "key": "architecture-overview",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 0,
+          "orientation": "overview",
+          "path": "views/architect/architecture-overview.md",
+          "source": "ai",
+          "subsections": [
+            "Architectural Shape",
+            "Environments & Accounts",
+            "Key Patterns"
+          ],
+          "title": "Architecture Overview"
+        },
+        {
+          "anchor": "workloads-systems",
+          "confidence": "Likely",
+          "content_hash": "f333b18626b55f039a59b5c9be616d2d851a38a8f0209d838c48b6d3731c00ae",
+          "empty": false,
+          "entity_count": 6,
+          "key": "workloads-and-systems",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 1,
+          "orientation": "detail",
+          "path": "views/architect/workloads-and-systems.md",
+          "source": "ai",
+          "subsections": [
+            "Systems",
+            "Workloads",
+            "Components & Tiers"
+          ],
+          "title": "Workloads & Systems"
+        },
+        {
+          "anchor": "dependencies",
+          "confidence": "Likely",
+          "content_hash": "bc73c6ffe3bfc5a32833118af7f1003a9dce57b50d030ccd71b4c9415343a7e4",
+          "empty": false,
+          "entity_count": 6,
+          "key": "dependencies",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 2,
+          "orientation": "detail",
+          "path": "views/architect/dependencies.md",
+          "source": "ai",
+          "subsections": [
+            "Workload Dependencies",
+            "Data Dependencies",
+            "Coupling Risks"
+          ],
+          "title": "Dependencies"
+        },
+        {
+          "anchor": "networking-connectivity",
+          "confidence": "Verified",
+          "content_hash": "7356935aa3e45a2680554236e7ae7d57e3fa840f3763d63f43ea56c0e6b8a111",
+          "empty": false,
+          "entity_count": 20,
+          "key": "networking-and-connectivity",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 3,
+          "orientation": "detail",
+          "path": "views/architect/networking-and-connectivity.md",
+          "source": "ai",
+          "subsections": [
+            "VPCs & Subnets",
+            "Routing & Egress",
+            "Private Connectivity"
+          ],
+          "title": "Networking & Connectivity"
+        },
+        {
+          "anchor": "security-architecture",
+          "confidence": "Likely",
+          "content_hash": "d2a610683fc85f04143b7f29842952b9a920a87b3d8f29486249ca83c309a9d5",
+          "empty": false,
+          "entity_count": 20,
+          "key": "security-architecture",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 4,
+          "orientation": "detail",
+          "path": "views/architect/security-architecture.md",
+          "source": "ai",
+          "subsections": [
+            "Trust & Identity",
+            "Exposure & Boundaries",
+            "Segmentation"
+          ],
+          "title": "Security Architecture"
+        },
+        {
+          "anchor": "design-risks",
+          "confidence": "Likely",
+          "content_hash": "197389c2861278755f3b4dd343d7a13304017db657a3c1060f1e460646395a6c",
+          "empty": false,
+          "entity_count": 0,
+          "key": "design-risks",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 5,
+          "orientation": "overview",
+          "path": "views/architect/design-risks.md",
+          "source": "ai",
+          "subsections": [
+            "Architectural Risks",
+            "Technical Debt Signals"
+          ],
+          "title": "Design Risks"
+        },
+        {
+          "anchor": "modernization-opportunities",
+          "confidence": "Likely",
+          "content_hash": "9474909d4434d1b3064a991b55c4618165d17b747fb40bcdde99f8c593427f2d",
+          "empty": false,
+          "entity_count": 0,
+          "key": "modernization-opportunities",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 6,
+          "orientation": "overview",
+          "path": "views/architect/modernization-opportunities.md",
+          "source": "ai",
+          "subsections": [
+            "Modernization Candidates",
+            "Recommended Improvements"
+          ],
+          "title": "Modernization Opportunities"
+        },
+        {
+          "anchor": "assumptions-unknowns",
+          "confidence": "Likely",
+          "content_hash": "22a8abcdc45ff2f381525c716dd8688b979370442e9e29fa11efda4d7bd57442",
+          "empty": false,
+          "entity_count": 0,
+          "key": "assumptions-and-unknowns",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 7,
+          "orientation": "reference",
+          "path": "views/architect/assumptions-and-unknowns.md",
+          "source": "ai",
+          "subsections": [
+            "Assumptions Made",
+            "Open Questions"
+          ],
+          "title": "Assumptions & Unknowns"
+        },
+        {
+          "anchor": "technical-reference-appendix",
+          "confidence": "Unknown",
+          "content_hash": "8885244e1e0ae64f0029f671e9da8e09cc726f63ae3abe12a7ce593e00d5a30c",
+          "empty": false,
+          "entity_count": 200,
+          "key": "technical-reference-appendix",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 8,
+          "orientation": "reference",
+          "path": "views/architect/technical-reference-appendix.md",
+          "source": "ai",
+          "subsections": [
+            "Entity Reference",
+            "Evidence"
+          ],
+          "title": "Technical Reference Appendix"
+        }
+      ],
+      "view": "architect"
+    },
+    {
+      "ai_section_count": 8,
+      "audience": "CTO / Engineering leadership",
+      "confidence_display": "summary",
+      "content_hash": "b77d1fcbbae245b7e3d82f2b75d1ff8452310c69b7161fd98c3d82bac2cb962e",
+      "depth": "concise",
+      "display_name": "Executive",
+      "fallback_section_count": 0,
+      "output_relpath": "views/executive/README.md",
+      "overall_confidence": "Likely",
+      "persona_questions": [
+        "What requires leadership attention?",
+        "What are the highest risks?",
+        "What decisions are needed?"
+      ],
+      "section_count": 8,
+      "sections": [
+        {
+          "anchor": "executive-summary",
+          "confidence": "Likely",
+          "content_hash": "fabdc0816e2e3148e5800009e35a41a5d133832a405b11eceeee33fbe6692682",
+          "empty": false,
+          "entity_count": 6,
+          "key": "executive-summary",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 0,
+          "orientation": "overview",
+          "path": "views/executive/executive-summary.md",
+          "source": "ai",
+          "subsections": [
+            "The Environment in Brief",
+            "Overall Posture"
+          ],
+          "title": "Executive Summary"
+        },
+        {
+          "anchor": "what-needs-attention",
+          "confidence": "Likely",
+          "content_hash": "4ee8a6570163c986644dbc4b5110692d9027e9795654594ec163d27f378ea3cc",
+          "empty": false,
+          "entity_count": 0,
+          "key": "what-needs-attention",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 1,
+          "orientation": "overview",
+          "path": "views/executive/what-needs-attention.md",
+          "source": "ai",
+          "subsections": [
+            "Highest-Priority Issues"
+          ],
+          "title": "What Needs Attention"
+        },
+        {
+          "anchor": "key-decisions-required",
+          "confidence": "Likely",
+          "content_hash": "0d0a3461e061171c32b699f9b836c51e666e47619863e044d20f14c2f8b28391",
+          "empty": false,
+          "entity_count": 0,
+          "key": "key-decisions-required",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 2,
+          "orientation": "overview",
+          "path": "views/executive/key-decisions-required.md",
+          "source": "ai",
+          "subsections": [
+            "Decisions for Leadership"
+          ],
+          "title": "Key Decisions Required"
+        },
+        {
+          "anchor": "strategic-risks",
+          "confidence": "Likely",
+          "content_hash": "7e8f39a05232c3195367f6b39ebee7b34bc643a346ec3028051f107cac2c523e",
+          "empty": false,
+          "entity_count": 0,
+          "key": "strategic-risks",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 3,
+          "orientation": "overview",
+          "path": "views/executive/strategic-risks.md",
+          "source": "ai",
+          "subsections": [
+            "Business & Security Risks"
+          ],
+          "title": "Strategic Risks"
+        },
+        {
+          "anchor": "cost-efficiency-signals",
+          "confidence": "Likely",
+          "content_hash": "ecdd78248005a8524b99d94e6c290d0bcc6a9f2680ee4524ba69a27316192056",
+          "empty": false,
+          "entity_count": 6,
+          "key": "cost-and-efficiency",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 4,
+          "orientation": "overview",
+          "path": "views/executive/cost-and-efficiency.md",
+          "source": "ai",
+          "subsections": [
+            "Where the Money Goes",
+            "Efficiency Opportunities"
+          ],
+          "title": "Cost & Efficiency Signals"
+        },
+        {
+          "anchor": "recommended-next-actions",
+          "confidence": "Likely",
+          "content_hash": "0c88821bc8aa61561284d83de02f3bd0918369c311fb973765cde6a942846425",
+          "empty": false,
+          "entity_count": 0,
+          "key": "recommended-next-actions",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 5,
+          "orientation": "overview",
+          "path": "views/executive/recommended-next-actions.md",
+          "source": "ai",
+          "subsections": [
+            "Near-Term Actions"
+          ],
+          "title": "Recommended Next Actions"
+        },
+        {
+          "anchor": "important-unknowns",
+          "confidence": "Likely",
+          "content_hash": "9a420cf979399ec04051f60a688a22d21e6b31d11e2493e929cf3619d34df52e",
+          "empty": false,
+          "entity_count": 0,
+          "key": "important-unknowns",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 6,
+          "orientation": "reference",
+          "path": "views/executive/important-unknowns.md",
+          "source": "ai",
+          "subsections": [
+            "Gaps Leadership Should Know"
+          ],
+          "title": "Important Unknowns"
+        },
+        {
+          "anchor": "evidence-appendix",
+          "confidence": "Unknown",
+          "content_hash": "70324437d3900bd6056c98f2598b8b209c12cedfa6d8ff53ea1f85564089cb1c",
+          "empty": false,
+          "entity_count": 6,
+          "key": "evidence-appendix",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 7,
+          "orientation": "reference",
+          "path": "views/executive/evidence-appendix.md",
+          "source": "ai",
+          "subsections": [
+            "Key Entities",
+            "Evidence"
+          ],
+          "title": "Evidence Appendix"
+        }
+      ],
+      "view": "executive"
+    },
+    {
+      "ai_section_count": 8,
+      "audience": "FinOps / Finance",
+      "confidence_display": "summary",
+      "content_hash": "d15e321d2b43f2d2e3be71119a8256dd8e5dc58ee95b233a86350b371cac91fa",
+      "depth": "balanced",
+      "display_name": "FinOps",
+      "fallback_section_count": 0,
+      "output_relpath": "views/finops/README.md",
+      "overall_confidence": "Likely",
+      "persona_questions": [
+        "What is driving cost?",
+        "Where is the waste?",
+        "What optimization is worth validating?"
+      ],
+      "section_count": 8,
+      "sections": [
+        {
+          "anchor": "cost-overview",
+          "confidence": "Likely",
+          "content_hash": "410814f348b836dd56693a2395c0b2bc3489864bc73297b98da968bdc5d57e79",
+          "empty": false,
+          "entity_count": 7,
+          "key": "cost-overview",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 0,
+          "orientation": "overview",
+          "path": "views/finops/cost-overview.md",
+          "source": "ai",
+          "subsections": [
+            "Total Spend Context",
+            "Where Cost Concentrates"
+          ],
+          "title": "Cost Overview"
+        },
+        {
+          "anchor": "cost-drivers",
+          "confidence": "Likely",
+          "content_hash": "4ab62cfcec997e12ec824b3132274d9658ee02c23d2b3bd2fb31fb90ac3e4034",
+          "empty": false,
+          "entity_count": 12,
+          "key": "cost-drivers",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 1,
+          "orientation": "detail",
+          "path": "views/finops/cost-drivers.md",
+          "source": "ai",
+          "subsections": [
+            "Architectural Cost Drivers",
+            "Service & Resource Drivers"
+          ],
+          "title": "Cost Drivers"
+        },
+        {
+          "anchor": "optimization-opportunities",
+          "confidence": "Likely",
+          "content_hash": "b2900ee7388554b67d7aa588468b1a342967d73ef73eee850859e47bfd0b69d2",
+          "empty": false,
+          "entity_count": 0,
+          "key": "optimization-opportunities",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 2,
+          "orientation": "overview",
+          "path": "views/finops/optimization-opportunities.md",
+          "source": "ai",
+          "subsections": [
+            "Optimization Candidates",
+            "Estimated Impact"
+          ],
+          "title": "Optimization Opportunities"
+        },
+        {
+          "anchor": "waste-utilization-signals",
+          "confidence": "Likely",
+          "content_hash": "9f9ba04e0c9f2dd4f4eb8189e74a130fa37edcdf3e6c69111ceda5727a072ee6",
+          "empty": false,
+          "entity_count": 0,
+          "key": "waste-and-utilization",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 3,
+          "orientation": "overview",
+          "path": "views/finops/waste-and-utilization.md",
+          "source": "ai",
+          "subsections": [
+            "Idle & Unused Resources",
+            "Utilization Signals"
+          ],
+          "title": "Waste / Utilization Signals"
+        },
+        {
+          "anchor": "cost-risks",
+          "confidence": "Likely",
+          "content_hash": "b24927a809416aaa7aa0beaa5e9846bfda7974f6222d9561bce8a6c2038ab96b",
+          "empty": false,
+          "entity_count": 0,
+          "key": "cost-risks",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 4,
+          "orientation": "overview",
+          "path": "views/finops/cost-risks.md",
+          "source": "ai",
+          "subsections": [
+            "Cost & Commitment Risks"
+          ],
+          "title": "Cost Risks"
+        },
+        {
+          "anchor": "missing-cost-evidence",
+          "confidence": "Likely",
+          "content_hash": "440441ef03c79dc4563a5a3bb993571f01adb52d25389c7cfe7fb9ed6ea9d36c",
+          "empty": false,
+          "entity_count": 0,
+          "key": "missing-cost-evidence",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 5,
+          "orientation": "reference",
+          "path": "views/finops/missing-cost-evidence.md",
+          "source": "ai",
+          "subsections": [
+            "Cost Data Gaps",
+            "What to Enable"
+          ],
+          "title": "Missing Cost Evidence"
+        },
+        {
+          "anchor": "recommended-actions",
+          "confidence": "Likely",
+          "content_hash": "41e4c92fb5776a5b4388e6b9bc400f47e183ec7522c374cf4fc4f570b628cfce",
+          "empty": false,
+          "entity_count": 0,
+          "key": "recommended-actions",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 6,
+          "orientation": "overview",
+          "path": "views/finops/recommended-actions.md",
+          "source": "ai",
+          "subsections": [
+            "Recommended Cost Actions"
+          ],
+          "title": "Recommended Actions"
+        },
+        {
+          "anchor": "cost-reference-appendix",
+          "confidence": "Unknown",
+          "content_hash": "26cb403f0562d950214eb38ddfb22871c7971b9b175d6a19afbf55683bfeca90",
+          "empty": false,
+          "entity_count": 12,
+          "key": "cost-reference-appendix",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 7,
+          "orientation": "reference",
+          "path": "views/finops/cost-reference-appendix.md",
+          "source": "ai",
+          "subsections": [
+            "Cost Entity Reference",
+            "Evidence"
+          ],
+          "title": "Cost Reference Appendix"
+        }
+      ],
+      "view": "finops"
+    },
+    {
+      "ai_section_count": 9,
+      "audience": "Any technical reader",
+      "confidence_display": "summary",
+      "content_hash": "8cd8e2611c5ab45a62cf33dc1905358bb5bc718742f3044cd7b072f64fb82a23",
+      "depth": "balanced",
+      "display_name": "Generic",
+      "fallback_section_count": 0,
+      "output_relpath": "views/generic/README.md",
+      "overall_confidence": "Likely",
+      "persona_questions": [
+        "What is this environment and what runs in it?",
+        "How is it structured, connected, and secured?",
+        "What is uncertain or unknown?"
+      ],
+      "section_count": 9,
+      "sections": [
+        {
+          "anchor": "environment-overview",
+          "confidence": "Likely",
+          "content_hash": "9fbf726096cd7d41db46fd498759adcf55498180e4a12dbaea5c00cd8fab6ef6",
+          "empty": false,
+          "entity_count": 12,
+          "key": "environment-overview",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 0,
+          "orientation": "overview",
+          "path": "views/generic/environment-overview.md",
+          "source": "ai",
+          "subsections": [
+            "Scope & Accounts",
+            "Regions & Footprint",
+            "What This Environment Is"
+          ],
+          "title": "Environment Overview"
+        },
+        {
+          "anchor": "architecture-summary",
+          "confidence": "Likely",
+          "content_hash": "03d38aedef824d708dcbfde5d354f12c4fca4591d6b2598b24aa5e248c7b8225",
+          "empty": false,
+          "entity_count": 12,
+          "key": "architecture-summary",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 1,
+          "orientation": "overview",
+          "path": "views/generic/architecture-summary.md",
+          "source": "ai",
+          "subsections": [
+            "Systems & Workloads",
+            "How It Fits Together"
+          ],
+          "title": "Architecture Summary"
+        },
+        {
+          "anchor": "key-workloads",
+          "confidence": "Likely",
+          "content_hash": "565abe48c4fc1db82701e5562ee82d05dce6b6e387fb718f31dac0c2fca94a4e",
+          "empty": false,
+          "entity_count": 5,
+          "key": "key-workloads",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 2,
+          "orientation": "detail",
+          "path": "views/generic/key-workloads.md",
+          "source": "ai",
+          "subsections": [
+            "Significant Workloads",
+            "Composition & Tiers",
+            "Key Dependencies"
+          ],
+          "title": "Key Workloads"
+        },
+        {
+          "anchor": "security-exposure",
+          "confidence": "Likely",
+          "content_hash": "41441117c96af23fab015b1d23ba43b597bdd68d674e5dbe73ad9f50aefedccc",
+          "empty": false,
+          "entity_count": 12,
+          "key": "security-and-exposure",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 3,
+          "orientation": "detail",
+          "path": "views/generic/security-and-exposure.md",
+          "source": "ai",
+          "subsections": [
+            "Internet Exposure",
+            "Identity & Access",
+            "Notable Risks"
+          ],
+          "title": "Security & Exposure"
+        },
+        {
+          "anchor": "operations-reliability",
+          "confidence": "Verified",
+          "content_hash": "faad3b930b2e5fafe7ab7535de91823fa906f140643b7501ff5cd76830cf99ad",
+          "empty": false,
+          "entity_count": 0,
+          "key": "operations-and-reliability",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 4,
+          "orientation": "overview",
+          "path": "views/generic/operations-and-reliability.md",
+          "source": "ai",
+          "subsections": [
+            "Reliability Signals",
+            "Operational Concerns"
+          ],
+          "title": "Operations & Reliability"
+        },
+        {
+          "anchor": "cost-signals",
+          "confidence": "Likely",
+          "content_hash": "2f994fc65b6525f006032e30a12e60e879815b4f2595f2097c8f1d307ae06eba",
+          "empty": false,
+          "entity_count": 7,
+          "key": "cost-signals",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 5,
+          "orientation": "overview",
+          "path": "views/generic/cost-signals.md",
+          "source": "ai",
+          "subsections": [
+            "Cost Drivers",
+            "Optimization Signals"
+          ],
+          "title": "Cost Signals"
+        },
+        {
+          "anchor": "top-findings-recommendations",
+          "confidence": "Likely",
+          "content_hash": "bae504f04b228abb79e4900f5a12db95ef6a9d31874f1be5e59d627f65e57555",
+          "empty": false,
+          "entity_count": 0,
+          "key": "top-findings-and-recommendations",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 6,
+          "orientation": "overview",
+          "path": "views/generic/top-findings-and-recommendations.md",
+          "source": "ai",
+          "subsections": [
+            "Top Findings",
+            "Recommended Actions"
+          ],
+          "title": "Top Findings & Recommendations"
+        },
+        {
+          "anchor": "unknowns-validation-questions",
+          "confidence": "Likely",
+          "content_hash": "100703f41c948c550d1a201592e2ebbc932bb4795bebc39bb4a2bb91858d1285",
+          "empty": false,
+          "entity_count": 0,
+          "key": "unknowns-and-validation",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 7,
+          "orientation": "reference",
+          "path": "views/generic/unknowns-and-validation.md",
+          "source": "ai",
+          "subsections": [
+            "What We Couldn't Confirm",
+            "Questions to Validate"
+          ],
+          "title": "Unknowns & Validation Questions"
+        },
+        {
+          "anchor": "reference-appendix",
+          "confidence": "Unknown",
+          "content_hash": "13e4b607eea6f05776ee914c5758ad57f04e89bcd72dce677bedff1122a9d794",
+          "empty": false,
+          "entity_count": 200,
+          "key": "reference-appendix",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 8,
+          "orientation": "reference",
+          "path": "views/generic/reference-appendix.md",
+          "source": "ai",
+          "subsections": [
+            "Entity Reference",
+            "Evidence"
+          ],
+          "title": "Reference Appendix"
+        }
+      ],
+      "view": "generic"
+    },
+    {
+      "ai_section_count": 9,
+      "audience": "Platform / Operations Engineers",
+      "confidence_display": "minimal",
+      "content_hash": "fd72cfdd8e0b286222b266508a6ade7521dde025a0e99201b08aba5aa69fb276",
+      "depth": "detailed",
+      "display_name": "Operations",
+      "fallback_section_count": 0,
+      "output_relpath": "views/operations/README.md",
+      "overall_confidence": "Verified",
+      "persona_questions": [
+        "What can break?",
+        "What requires operational attention?",
+        "What recovery risks exist?"
+      ],
+      "section_count": 9,
+      "sections": [
+        {
+          "anchor": "operational-overview",
+          "confidence": "Likely",
+          "content_hash": "f150bb8641de3345279dbf1b054aeaab50e1796325a0bda38af2734bd7fd4b06",
+          "empty": false,
+          "entity_count": 14,
+          "key": "operational-overview",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 0,
+          "orientation": "overview",
+          "path": "views/operations/operational-overview.md",
+          "source": "ai",
+          "subsections": [
+            "What's Running",
+            "Operational Footprint"
+          ],
+          "title": "Operational Overview"
+        },
+        {
+          "anchor": "critical-components",
+          "confidence": "Likely",
+          "content_hash": "412556331e07e2e015bf6961840c4ddfd89af5925a678d46475a314967eb26bd",
+          "empty": false,
+          "entity_count": 6,
+          "key": "critical-components",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 1,
+          "orientation": "detail",
+          "path": "views/operations/critical-components.md",
+          "source": "ai",
+          "subsections": [
+            "Critical Workloads",
+            "Shared Dependencies"
+          ],
+          "title": "Critical Components"
+        },
+        {
+          "anchor": "connectivity-routing",
+          "confidence": "Verified",
+          "content_hash": "20741a6c2b7821403648820a134bcfdbe1179f3508f98a36c8a14a677655963e",
+          "empty": false,
+          "entity_count": 20,
+          "key": "connectivity-and-routing",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 2,
+          "orientation": "detail",
+          "path": "views/operations/connectivity-and-routing.md",
+          "source": "ai",
+          "subsections": [
+            "Network Connectivity",
+            "Routing & Gateways",
+            "Egress Paths"
+          ],
+          "title": "Connectivity & Routing"
+        },
+        {
+          "anchor": "failure-points",
+          "confidence": "Verified",
+          "content_hash": "65657fd63ca72110ce1adaaa96640c252d3556d14ff73efc05a4ac24ea982e22",
+          "empty": false,
+          "entity_count": 0,
+          "key": "failure-points",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 3,
+          "orientation": "overview",
+          "path": "views/operations/failure-points.md",
+          "source": "ai",
+          "subsections": [
+            "Single Points of Failure",
+            "Resilience Gaps"
+          ],
+          "title": "Failure Points"
+        },
+        {
+          "anchor": "monitoring-logging-gaps",
+          "confidence": "Likely",
+          "content_hash": "334d86c90a47cd42af5e6655c0485ed9a98d48a6f4cbf75ca9ce70bc4155928f",
+          "empty": false,
+          "entity_count": 0,
+          "key": "monitoring-and-logging-gaps",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 4,
+          "orientation": "overview",
+          "path": "views/operations/monitoring-and-logging-gaps.md",
+          "source": "ai",
+          "subsections": [
+            "Logging Coverage",
+            "Monitoring Gaps"
+          ],
+          "title": "Monitoring & Logging Gaps"
+        },
+        {
+          "anchor": "backup-recovery-signals",
+          "confidence": "Likely",
+          "content_hash": "9d5c6f7267082b3694fe46049f895b52aa19165ce6f79a7e0c118ce8bc0eedf2",
+          "empty": false,
+          "entity_count": 0,
+          "key": "backup-and-recovery",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 5,
+          "orientation": "overview",
+          "path": "views/operations/backup-and-recovery.md",
+          "source": "ai",
+          "subsections": [
+            "Backup Signals",
+            "Recovery Readiness"
+          ],
+          "title": "Backup & Recovery Signals"
+        },
+        {
+          "anchor": "operational-risks",
+          "confidence": "Verified",
+          "content_hash": "ed9f69cf814bbdbe41f1519a3e401d636482939ae194019807cc86c8162d73d1",
+          "empty": false,
+          "entity_count": 0,
+          "key": "operational-risks",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 6,
+          "orientation": "overview",
+          "path": "views/operations/operational-risks.md",
+          "source": "ai",
+          "subsections": [
+            "Highest Operational Risks"
+          ],
+          "title": "Operational Risks"
+        },
+        {
+          "anchor": "runbook-validation-questions",
+          "confidence": "Verified",
+          "content_hash": "8ddec60ced6b11c747d3110efb9bea36a66fb9b597c8179aa1d37aea3ccdd51a",
+          "empty": false,
+          "entity_count": 0,
+          "key": "runbook-validation-questions",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 7,
+          "orientation": "reference",
+          "path": "views/operations/runbook-validation-questions.md",
+          "source": "ai",
+          "subsections": [
+            "Operational Checks",
+            "Questions to Validate"
+          ],
+          "title": "Runbook / Validation Questions"
+        },
+        {
+          "anchor": "infrastructure-reference-appendix",
+          "confidence": "Unknown",
+          "content_hash": "800ec00946cf27244de23ed0f7e7e9c265add659e0aa2763d500b259cc7cb8b3",
+          "empty": false,
+          "entity_count": 200,
+          "key": "infrastructure-reference-appendix",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 8,
+          "orientation": "reference",
+          "path": "views/operations/infrastructure-reference-appendix.md",
+          "source": "ai",
+          "subsections": [
+            "Infrastructure Inventory",
+            "Entity Reference"
+          ],
+          "title": "Infrastructure Reference Appendix"
+        }
+      ],
+      "view": "operations"
+    },
+    {
+      "ai_section_count": 8,
+      "audience": "Security & Governance teams",
+      "confidence_display": "prominent",
+      "content_hash": "c89442b56be3f12d243c62fc7667f205b6bdb733bee69c6563f383437c663cb0",
+      "depth": "detailed",
+      "display_name": "Security",
+      "fallback_section_count": 0,
+      "output_relpath": "views/security/README.md",
+      "overall_confidence": "Likely",
+      "persona_questions": [
+        "What is exposed, and to whom?",
+        "Where is identity / access over-privileged or unclear?",
+        "What governance or evidence gaps exist?"
+      ],
+      "section_count": 8,
+      "sections": [
+        {
+          "anchor": "security-overview",
+          "confidence": "Likely",
+          "content_hash": "e6477be835ebb9a96ca0c9f86cb1421cbc3e6fdeb12e9286acdee7e09a30c897",
+          "empty": false,
+          "entity_count": 14,
+          "key": "security-overview",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 0,
+          "orientation": "overview",
+          "path": "views/security/security-overview.md",
+          "source": "ai",
+          "subsections": [
+            "Security Posture",
+            "Scope of Assessment"
+          ],
+          "title": "Security Overview"
+        },
+        {
+          "anchor": "exposure-summary",
+          "confidence": "Likely",
+          "content_hash": "a5bbbdc1731d0bd2c81daa604d4343e83b0d8cc6b09bc0591183a8d8bace6465",
+          "empty": false,
+          "entity_count": 20,
+          "key": "exposure-summary",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 1,
+          "orientation": "overview",
+          "path": "views/security/exposure-summary.md",
+          "source": "ai",
+          "subsections": [
+            "Internet-Reachable Resources",
+            "Exposure Paths"
+          ],
+          "title": "Exposure Summary"
+        },
+        {
+          "anchor": "identity-access-risks",
+          "confidence": "Likely",
+          "content_hash": "7c4b031dbf6a8169e029a67f52fd75c65e7e7a2a25b46921a8a53ead29f8ccf1",
+          "empty": false,
+          "entity_count": 20,
+          "key": "identity-and-access-risks",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 2,
+          "orientation": "detail",
+          "path": "views/security/identity-and-access-risks.md",
+          "source": "ai",
+          "subsections": [
+            "Privilege & Trust",
+            "Access Risks"
+          ],
+          "title": "Identity & Access Risks"
+        },
+        {
+          "anchor": "network-access-paths",
+          "confidence": "Verified",
+          "content_hash": "2f6e3b0709d8c1e3e413115b178bc5847b0576943a13a55289dbd9087d5181d0",
+          "empty": false,
+          "entity_count": 20,
+          "key": "network-access-paths",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 3,
+          "orientation": "detail",
+          "path": "views/security/network-access-paths.md",
+          "source": "ai",
+          "subsections": [
+            "Ingress Paths",
+            "Lateral Connectivity"
+          ],
+          "title": "Network Access Paths"
+        },
+        {
+          "anchor": "governance-coverage-gaps",
+          "confidence": "Likely",
+          "content_hash": "a98cc373bf5e8c70d4af300650963d3a3cc0d640a697e43bb2960399a64e6ad1",
+          "empty": false,
+          "entity_count": 7,
+          "key": "governance-and-coverage-gaps",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 4,
+          "orientation": "overview",
+          "path": "views/security/governance-and-coverage-gaps.md",
+          "source": "ai",
+          "subsections": [
+            "Org Guardrails",
+            "Coverage Gaps"
+          ],
+          "title": "Governance & Coverage Gaps"
+        },
+        {
+          "anchor": "security-findings",
+          "confidence": "Likely",
+          "content_hash": "36ced07bd1ee969733e4a42b0b8bf2821c2369a0f18c1c2f498cbf79d8f32990",
+          "empty": false,
+          "entity_count": 0,
+          "key": "security-findings",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 5,
+          "orientation": "overview",
+          "path": "views/security/security-findings.md",
+          "source": "ai",
+          "subsections": [
+            "Findings",
+            "Recommended Mitigations"
+          ],
+          "title": "Security Findings"
+        },
+        {
+          "anchor": "validation-questions",
+          "confidence": "Likely",
+          "content_hash": "65a4f1be065f43eaa6f0ed3b30d10cb092bc42f512fa73c955b0f2a79973fed3",
+          "empty": false,
+          "entity_count": 0,
+          "key": "validation-questions",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 6,
+          "orientation": "reference",
+          "path": "views/security/validation-questions.md",
+          "source": "ai",
+          "subsections": [
+            "Questions to Resolve"
+          ],
+          "title": "Validation Questions"
+        },
+        {
+          "anchor": "evidence-appendix",
+          "confidence": "Unknown",
+          "content_hash": "14f7026817b35c56f48d9ca92d3297251a3a8866248b28ec6dd56c9b8d60a09a",
+          "empty": false,
+          "entity_count": 197,
+          "key": "evidence-appendix",
+          "kqi_score": 100.0,
+          "needs_improvement": false,
+          "order": 7,
+          "orientation": "reference",
+          "path": "views/security/evidence-appendix.md",
+          "source": "ai",
+          "subsections": [
+            "Entity Reference",
+            "Evidence"
+          ],
+          "title": "Evidence Appendix"
+        }
+      ],
+      "view": "security"
+    }
+  ]
+}
