@@ -19,7 +19,7 @@ Start with the **[Knowledge Views index](./views/README.md)**, then open the vie
 | [Security](./views/security/README.md) | Security & Governance teams |
 | [FinOps](./views/finops/README.md) | FinOps / Finance |
 
-Each view is a self-contained folder: its `README.md` is the composed view, every section is also a standalone Markdown file, and `diagrams/` holds the rendered architecture diagrams.
+Each view is a self-contained folder: its `README.md` indexes the view's sections, every section is a standalone Markdown file you can read on its own, and `diagrams/` holds the rendered architecture diagrams.
 
 ## About CloudoX
 

@@ -1,22 +1,18 @@
 {
-  "content_hash": "e568ea94f2d415bc55ba5f54e052ff47da93ddbce6c7a8e0e527a9c6a39d1d18",
+  "content_hash": "77eb4806cd5103d36aab6ab0ec3f50f1565c1366fcd74839917add246be20d93",
   "counts_by_dimension": [
     {
       "count": 4,
       "dimension": "hollow_sections"
-    },
-    {
-      "count": 4,
-      "dimension": "signal_to_noise"
     }
   ],
   "errors": {},
-  "finding_count": 8,
+  "finding_count": 4,
   "findings_relpath": "findings.json",
-  "generated_at": "2026-06-18T14:26:02.645983+00:00",
-  "grade": "B",
+  "generated_at": "2026-06-19T08:07:43.409851+00:00",
+  "grade": "A",
   "overall_relpath": "overall.json",
-  "overall_score": 89.98,
+  "overall_score": 90.92,
   "provider": "aws",
   "review_relpath": null,
   "schema_version": 1,
@@ -34,11 +30,11 @@
   "strongest_view": "executive",
   "views": [
     {
-      "content_hash": "3239d9826105640b954dba7383bb0433814a2d52ea5e902c5f684931d00880dd",
+      "content_hash": "40fb8e86b2e8b4a99c487a176ad0042c89d85150455829cc496d5be979bb62d8",
       "display_name": "Architect",
-      "finding_count": 1,
-      "grade": "B",
-      "overall_score": 89.26,
+      "finding_count": 0,
+      "grade": "A",
+      "overall_score": 90.62,
       "persona_coverage_ratio": 1.0,
       "relpath": "architect.json",
       "view": "architect"
@@ -64,31 +60,31 @@
       "view": "finops"
     },
     {
-      "content_hash": "dd49238ad066041ea2fdc49bbd59a9fa1bae6af3966cae850d0a9d9c6cc789f2",
+      "content_hash": "8dff9929fad2ae79532f44e32f298319ec9ef00e8ba1eec0f5c0c4e1f4fe779b",
       "display_name": "Generic",
-      "finding_count": 1,
-      "grade": "B",
-      "overall_score": 89.59,
+      "finding_count": 0,
+      "grade": "A",
+      "overall_score": 91.25,
       "persona_coverage_ratio": 1.0,
       "relpath": "generic.json",
       "view": "generic"
     },
     {
-      "content_hash": "e05143a7132d114396e5e78c72dec84251d3c64f492cf40e9f0a1f55931ce0e1",
+      "content_hash": "05f71c73bbfc48d36669fdfa9cefeb7dcc973d0e22b059f131555166f02d300b",
       "display_name": "Operations",
-      "finding_count": 2,
+      "finding_count": 1,
       "grade": "B",
-      "overall_score": 85.47,
+      "overall_score": 87.04,
       "persona_coverage_ratio": 1.0,
       "relpath": "operations.json",
       "view": "operations"
     },
     {
-      "content_hash": "24b8d030d1b62c6ee37b89f92b5f7e13d873f9c7f975ce21d467899639d056e7",
+      "content_hash": "93ea8642b465b265ddb12577bf985a7577541180b652da2c54dee028e98ed63b",
       "display_name": "Security",
-      "finding_count": 2,
+      "finding_count": 1,
       "grade": "B",
-      "overall_score": 86.74,
+      "overall_score": 87.78,
       "persona_coverage_ratio": 1.0,
       "relpath": "security.json",
       "view": "security"
