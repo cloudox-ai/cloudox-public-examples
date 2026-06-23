@@ -12,17 +12,17 @@
 
 ### Near-Term Actions
 
-One confirmed architectural risk warrants attention before it becomes an incident: the production database **cloudox-demo-atlas-prod-pg** is running in a single Availability Zone. A zone-level failure would cause downtime and potential data loss with no automatic failover. Enabling Multi-AZ is the recommended remediation (`modernization_opportunity:architecture:cloudox-demo-atlas-prod-pg`).
+One verified architectural risk warrants attention before it becomes an incident: the production database **cloudox-demo-atlas-prod-pg** is running in a single Availability Zone with no standby. A zone failure would cause unplanned downtime and potential data loss for whatever workload depends on this datastore.
 
-| Item | Risk | Recommended Action | Decision Required? |
+| Priority | Resource | Risk | Recommended Action |
 |---|---|---|---|
-| **cloudox-demo-atlas-prod-pg** — Single-AZ production database | Downtime / data loss on zone failure | Evaluate enabling Multi-AZ | No — engineering team can proceed |
+| High | cloudox-demo-atlas-prod-pg | Zone failure → downtime / data loss | Evaluate enabling Multi-AZ standby |
 
-Two additional areas surfaced by discovery should be tracked by leadership, though they require further investigation before action:
+**Decision needed from engineering leadership:** Confirm whether the availability and recovery requirements for `cloudox-demo-atlas-prod-pg` justify enabling a Multi-AZ standby replica. This is an architectural change with cost implications; the trade-off should be made explicitly rather than by default.
 
-- **Internet-exposed security groups** — 2 security groups are open to the internet (`sg-0459201826f8de5b3`, `sg-06f2b4190bf01d261`). Engineering should confirm whether this exposure is intentional and document the justification.
-- **No Security Hub enablement detected** — There is no evidence that AWS Security Hub is active. This is a gap in centralised security posture visibility and worth a deliberate decision on whether to enable it.
+> **Confidence: Likely.** This finding is based on discovered architecture. Spend impact cannot be quantified at this time — cost collection is currently disabled for this workspace. Security Hub enablement status is also unknown, which limits visibility into additional security findings that may exist.
 
-**Cost visibility is currently unavailable.** Cost Explorer collection is disabled in this environment, so no spend figures or savings estimates can be provided. Enabling cost collection is recommended before the next review cycle to support data-driven prioritisation.
-
-> **Confidence: Likely** — Findings are derived from discovered architecture. Spend data, CloudWatch utilisation metrics, and several RDS/DynamoDB cost drivers are not available in this run; the full risk and cost picture may be broader than shown here.
+**Additional gaps to be aware of:**
+- Security Hub is not enabled (or not discovered), reducing centralised security signal coverage.
+- Cost data is unavailable; spend-based prioritisation and right-sizing recommendations cannot be made until cost collection is enabled.
+- CloudWatch utilisation metrics are not collected in this version, so idle or over-provisioned resource recommendations are not available.

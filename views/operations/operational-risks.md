@@ -10,18 +10,17 @@
 
 ## Operational Risks
 
-Two detection-coverage gaps affect five of six scanned accounts simultaneously, leaving the majority of the estate with reduced visibility into both external access exposure and active threats. A third risk — a broadly-named admin IAM role in the Sandbox — carries lower confidence but warrants validation before it is dismissed.
-
-> **Coverage note:** Resource Explorer and Cloud Control meta-collectors were unavailable during this scan. Long-tail resource types and AWS-visible breadth could not be cross-checked; additional risks may exist beyond typed collector coverage.
+Three active risks span detection coverage and identity privilege across the organisation. Two of them — missing GuardDuty and missing IAM Access Analyzer — affect the same five accounts and represent the most operationally significant gaps: incidents or policy violations in those accounts will go undetected or unanalysed until the services are enabled.
 
 ### Highest Operational Risks
 
-#### 1. Uneven GuardDuty Threat Detection Coverage — 5 accounts uncovered
-`risk:security:aws-guardduty-detector` · Severity: **Medium** · Priority 2
+#### 1. Uneven GuardDuty Threat Detection Coverage
 
-GuardDuty is enabled in only 1 of 6 scanned accounts. The following accounts have **no active threat detection**:
+**Risk ID:** `risk:security:aws-guardduty-detector` | **Severity:** Medium | **Priority:** 2
 
-| Account | ID |
+GuardDuty is enabled in only 1 of 6 scanned accounts. The following five accounts have no GuardDuty detector active:
+
+| Account | Account ID |
 |---|---|
 | Log Archive Account | 122980216815 |
 | Workload Dev Account | 105769365151 |
@@ -29,34 +28,47 @@ GuardDuty is enabled in only 1 of 6 scanned accounts. The following accounts hav
 | Management Account | 110319895932 |
 | Sandbox Ma Account | 161388682021 |
 
-**Operational impact:** Malicious activity — credential abuse, crypto-mining, C2 communication, lateral movement — occurring in these accounts will not generate GuardDuty findings. Incidents may go undetected until they surface through other means (billing anomalies, customer reports, etc.).
+**Operational impact:** Threat events (port scans, credential abuse, C2 callbacks, unusual API calls) occurring in these accounts produce no GuardDuty findings. There is no automated detection signal to feed alerting pipelines or incident response workflows for those accounts.
 
-**What can break / recovery risk:** Without findings, automated or manual incident-response runbooks that depend on GuardDuty alerts will not trigger. The Workload Prod Account (`122122642149`) and Management Account (`110319895932`) are the highest-consequence gaps.
+**What to do:** Enable GuardDuty across all accounts, preferably org-wide through a delegated administrator so coverage cannot drift per-account.
 
-**Recommended action:** Enable GuardDuty across all accounts, preferably org-wide via a delegated administrator in the Management Account to ensure consistent, centrally-managed coverage.
+> Note: The Log Archive Account (122980216815) is listed with `Likely` confidence — verify detector status directly in that account.
 
 ---
 
-#### 2. Uneven IAM Access Analyzer Coverage — 5 accounts uncovered
-`risk:security:aws-accessanalyzer-analyzer` · Severity: **Medium** · Priority 2
+#### 2. Uneven IAM Access Analyzer Coverage
+
+**Risk ID:** `risk:security:aws-accessanalyzer-analyzer` | **Severity:** Medium | **Priority:** 2
 
 IAM Access Analyzer is enabled in only 1 of 6 scanned accounts. The same five accounts listed above are uncovered.
 
-**Operational impact:** Unintended external access to S3 buckets, IAM roles, KMS keys, SQS queues, and other resource-based policies in these accounts will not be surfaced automatically. Misconfigurations that expose resources to the internet or to external AWS principals will remain silent.
+**Operational impact:** Resource policies that unintentionally grant external access (S3 buckets, KMS keys, IAM roles, Lambda functions, SQS queues) will not be flagged in these accounts. This is particularly concerning for the Workload Prod Account (122122642149) and Management Account (110319895932), where undetected external access paths carry the highest blast radius.
 
-**What can break / recovery risk:** The Log Archive Account (`122980216815`) is particularly sensitive — undetected external access to log data could undermine audit integrity and compliance posture. The Management Account (`110319895932`) exposure is similarly high-consequence.
+**What to do:** Enable IAM Access Analyzer org-wide via a delegated administrator. This ensures new findings are centralised and consistent coverage is maintained without per-account configuration.
 
-**Recommended action:** Enable IAM Access Analyzer org-wide via a delegated administrator. This provides a single pane of findings and avoids per-account enablement drift.
+> Note: Same confidence caveat applies to Log Archive Account (122980216815).
 
 ---
 
-#### 3. Broadly-Privileged IAM Role: `cloudox-demo-sandbox-unused-admin`
-`risk:security:cloudox-demo-sandbox-unused-admin` · Severity: **Medium** · Priority 3 · Confidence: **Assumed**
+#### 3. Broadly-Privileged IAM Role: cloudox-demo-sandbox-unused-admin
 
-The IAM role `cloudox-demo-sandbox-unused-admin` (ID: `AROAAAAADPCL3BVEXUDTH`) exists in the **Sandbox Ma Account** (`161388682021`). Its name suggests broad or administrative access, but attached policy details were not collected — the privilege breadth is inferred from naming only and must be validated directly.
+**Risk ID:** `risk:security:cloudox-demo-sandbox-unused-admin` | **Severity:** Medium | **Priority:** 3
 
-**Operational impact (if confirmed):** An over-privileged, potentially unused role represents a large identity blast radius. If the role's trust policy allows broad assumption, it could be exploited to escalate privileges or move laterally within the sandbox.
+The IAM role `cloudox-demo-sandbox-unused-admin` (ID: `AROAAAAADPCL3BVEXUDTH`) exists in the **Sandbox Ma Account** (161388682021). Its name implies broad or administrative access.
 
-**What requires operational attention:** Confirm whether the role is actively used, review all attached managed and inline policies, and apply least-privilege scoping. If the role is genuinely unused, consider deleting it.
+**Operational impact:** An over-privileged role that is unused represents a standing identity blast radius — if assumed by a compromised principal or misconfigured trust policy, it could allow wide-ranging actions within the sandbox account.
 
-**Recommended action:** Review attached policies; apply least privilege. Validate before treating this as a confirmed risk — the current assessment is based on naming convention alone.
+**Confidence note (Assumed):** Privilege breadth was not directly collected; this risk is inferred from the role name. The actual attached policies must be reviewed before drawing firm conclusions.
+
+**What to do:** Inspect the attached policies for this role. If administrative permissions are confirmed and the role is genuinely unused, remove it or scope it down to least privilege.
+
+---
+
+#### Coverage Gaps Affecting This Section
+
+Two meta-collectors were unavailable during discovery, which limits confidence in the completeness of the risk inventory:
+
+- **AWS Resource Explorer** was disabled or unavailable — the full breadth of AWS-visible resources could not be cross-checked.
+- **AWS Cloud Control** meta-collector was disabled — long-tail resource types are limited to typed collector coverage only.
+
+This means additional risks in resource categories not covered by typed collectors may not appear here.

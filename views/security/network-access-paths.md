@@ -12,42 +12,42 @@
 
 **Confidence: Verified** — Derived from complete graph evidence for this domain.
 
-The most security-relevant finding here is the combination of internet-facing exposure across multiple environments and a production data tier that sits in a single availability zone. With 25 internet-facing access paths observed and 2 security groups open to the internet, the attack surface is non-trivial and warrants structured review. The sections below break this down by ingress and lateral connectivity.
-
----
+Three separate VPCs, each with a direct internet gateway attachment, define the external exposure boundary for this environment. All observed subnets in scope are public-facing, meaning resources placed in them are reachable from the internet subject only to security group and network ACL controls. This is the most significant network-access posture signal available from the current evidence set and warrants explicit validation of what is actually running in those subnets.
 
 ### Ingress Paths
 
-Three VPCs — all in `eu-central-1` — carry internet gateways, meaning each has a direct on-ramp from the public internet:
+Three VPCs are confirmed across two accounts and one sandbox account, all in `eu-central-1`, each with a dedicated internet gateway:
 
-| VPC | Account | Internet Gateway |
-|---|---|---|
-| Cloudox Demo Atlas Prod VPC (`vpc-0aaa6d4f2f981e945`) | 122122642149 | `igw-01dd5625ec1ea7a54` |
-| Cloudox Demo Atlas Dev VPC (`vpc-0a4d44a07f48d7ca0`) | 105769365151 | `igw-0155958a0a5e9c500` |
-| Cloudox Demo Sandbox VPC (`vpc-0c97d53850c027a14`) | 161388682021 | `igw-08017528fa36ccb4d` |
+| VPC | Account | Internet Gateway | Environment Signal |
+|---|---|---|---|
+| Cloudox Demo Atlas Prod VPC (`vpc-0aaa6d4f2f981e945`) | `122122642149` | Cloudox Demo Atlas Prod Igw (`igw-01dd5625ec1ea7a54`) | Production |
+| Cloudox Demo Atlas Dev VPC (`vpc-0a4d44a07f48d7ca0`) | `105769365151` | Cloudox Demo Atlas Dev Igw (`igw-0155958a0a5e9c500`) | Development |
+| Cloudox Demo Sandbox VPC (`vpc-0c97d53850c027a14`) | `161388682021` | Sandbox Internet Gateway (`igw-08017528fa36ccb4d`) | Sandbox |
 
-All three environments — production, development, and sandbox — are internet-reachable. For Security & Governance teams, the presence of an internet gateway on the Dev and Sandbox VPCs alongside Production is a governance signal: if these environments share any credentials, data, or peering paths, the lower-assurance environments could become a stepping stone toward production.
+All five confirmed subnets in scope are classified as **Public Subnets** in `eu-central-1`:
 
-Five public subnets are confirmed across these three VPCs (accounts 122122642149, 105769365151, and 161388682021), all in `eu-central-1`. Resources placed in these subnets are directly reachable from the internet subject to security group and NACL rules.
+- `subnet-016c22941a019a137` (account `122122642149` — Prod)
+- `subnet-013a24d318ed6f3d0` (account `122122642149` — Prod)
+- `subnet-0f64d71c952a7898a` (account `105769365151` — Dev)
+- `subnet-065f522206524ab12` (account `105769365151` — Dev)
+- `subnet-029e2cceb3d0beff7` (account `161388682021` — Sandbox)
 
-**Security groups open to the internet:** 2 are confirmed. The package does not identify which resources these groups are attached to, so the precise exposure surface cannot be fully characterised from this evidence alone — this is a material gap (see Unknowns).
+The presence of public subnets in the **production** VPC (`vpc-0aaa6d4f2f981e945`) is the highest-priority exposure signal here. Security and governance teams should confirm which compute or data resources are placed in `subnet-016c22941a019a137` and `subnet-013a24d318ed6f3d0`, and verify that security groups and NACLs are the intended last line of defence for those resources.
 
-**25 internet-facing access paths** are observed in total across the estate. The package does not enumerate each path individually, but the combination of three internet gateways, five public subnets, and two permissive security groups is consistent with this count.
+AWS-managed prefix lists `pl-66a5400f` and `pl-6ea54007` (eu-central-1 regional prefix lists) are referenced in the evidence, indicating that at least some access rules are scoped to AWS-managed IP ranges rather than arbitrary open CIDRs — however, the specific rules and resources they are attached to are not detailed in this section's evidence set.
 
-One **DynamoDB Interface Endpoint** (`vpce-02ddbd8d63a6ab447`, account 122122642149, `eu-central-1`) is present in the Prod environment. This routes DynamoDB traffic privately within the VPC rather than over the public internet — a positive signal for that specific service path. No other VPC endpoints are evidenced in this package.
-
-AWS-managed prefix lists `pl-66a5400f` and `pl-6ea54007` (eu-central-1) are referenced in the evidence graph. These are standard AWS-managed prefix lists (typically used for S3 and DynamoDB gateway routing); their presence indicates route table or security group rules reference them, but the package does not confirm the specific rules or their scope.
-
----
+A **DynamoDB Interface Endpoint** (`vpce-02ddbd8d63a6ab447`) is present in the Prod account (`122122642149`), providing a private path to DynamoDB from within the Prod VPC. This reduces the need for DynamoDB traffic to traverse the public internet from that VPC.
 
 ### Lateral Connectivity
 
-The package does not contain direct evidence of VPC peering, Transit Gateway attachments, or other explicit cross-VPC routing between the three environments. Absence of evidence here is not confirmation of isolation — this is a material unknown that should be validated (see Unknowns).
+The package confirms the existence of three distinct VPCs across three accounts. No VPC peering connections, Transit Gateway attachments, or PrivateLink cross-VPC service endpoints are recorded in this section's evidence. The absence of observed lateral connectivity paths between Prod, Dev, and Sandbox VPCs is noted, but coverage of inter-VPC routing is not guaranteed to be complete from this section alone — other sections may carry additional evidence.
 
-The most significant lateral risk evidenced is the dependency of the **Cloudox Demo Atlas Prod API** workload (`cloudox-demo-atlas-prod-api`, account 122122642149) on the datastore **`cloudox-demo-atlas-prod-pg`** (`dependency_concern:architecture:cloudox-demo-atlas-prod-pg`). This datastore is not Multi-AZ. While this is primarily a resilience concern, it has a security-governance dimension: a zone failure or targeted disruption of the data tier would take the production API's data layer offline. The recommended action is to confirm whether Multi-AZ or backup controls are in place and to review how the API handles a data-tier failure.
+One architecture-level dependency concern is recorded that has direct network-access implications:
 
-> **Confidence on the workload dependency:** Verified for the dependency relationship. The datastore entity `cloudox-demo-atlas-prod-pg` carries Unknown confidence on its account/region attributes, meaning its precise placement cannot be confirmed from current evidence.
+> **Critical dependency: DBInstance `cloudox-demo-atlas-prod-pg`** (`dependency_concern:architecture:cloudox-demo-atlas-prod-pg`) — The workload **Cloudox Demo Atlas Prod API** (`cloudox-demo-atlas-prod-api`, account `122122642149`, `eu-central-1`) depends on the datastore `cloudox-demo-atlas-prod-pg`, which is **not Multi-AZ**. A zone failure would take the data tier offline for this production workload. *Confidence on the workload entity: Likely; confidence on the datastore entity: Unknown.*
 
-No evidence of Security Hub enablement was discovered. This means centralised, cross-account security findings aggregation cannot be confirmed, and the 25 internet-facing paths and 2 open security groups may not be under active automated monitoring.
+From a governance perspective, this means the network path to the production database is a single point of failure: if the availability zone hosting `cloudox-demo-atlas-prod-pg` becomes unreachable, the dependent API loses its data tier entirely. The recommended action is to confirm whether Multi-AZ or automated backups are configured, and to review how the API handles a data-tier failure (graceful degradation vs. hard outage).
+
+> **Evidence gap:** No Security Hub enablement was discovered for this environment. This means there is no confirmed centralised findings aggregation for network-level security signals (e.g., GuardDuty network findings, Security Hub network reachability checks). Governance teams should treat network exposure assessments as potentially incomplete until Security Hub or an equivalent control is confirmed active.
 
 ![Workload VPC network topology](./diagrams/security-network-topology.png)

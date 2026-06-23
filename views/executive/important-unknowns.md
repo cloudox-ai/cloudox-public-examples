@@ -10,21 +10,20 @@
 
 ## Important Unknowns
 
-Four evidence gaps limit the completeness of this analysis. None require an immediate decision, but two directly constrain cost visibility — which leadership should resolve before drawing conclusions about spend or optimization opportunities.
+Four evidence gaps limit the completeness of this view. None require an immediate decision, but two directly constrain cost visibility and should be resolved before any spend optimisation work begins.
 
 ### Gaps Leadership Should Know
 
-| Domain | Gap | Impact on This View |
-|--------|-----|---------------------|
-| Cost | Cost Explorer collection is disabled | No actual spend figures available; all cost analysis is architecture-derived only |
-| Cost | CloudWatch utilization metrics not collected | No idle, underutilized, or right-sizing recommendations possible |
-| Cost | RDS read replicas, provisioned IOPS, DynamoDB capacity mode, Direct Connect, and S3 storage classes not captured | Cost drivers for these services are undetected |
-| Coverage | Cloud Control meta-collector was disabled | Long-tail resource types may be missing from the inventory |
+**Cost data is unavailable.** Cost Explorer collection was disabled during this discovery run, so no spend figures, trends, or savings estimates are present anywhere in this view. All cost-related observations are derived from the discovered architecture only — not from actual billing data. To unlock spend analysis, re-run discovery with cost collection enabled.
+(`evidence_gap:cost:cost-explorer-collection-is-disabled-cloudox-cost-enabled-false-no-collect-costs-spend-figures-are-unavailable-the-analysis-below-is-derived-from-the-discovered-architecture-only`)
 
-**Cost visibility is the most material gap.** Because Cost Explorer collection is disabled, this view cannot report actual spend, trends, or savings estimates — only architectural patterns that are known to carry charges. Enabling cost collection (`CLOUDOX_COST__ENABLED=true`) is the single action that would most improve the fidelity of future runs.
+**Right-sizing and idle-resource analysis is not possible.** CloudWatch utilisation metrics are not collected in this version of CloudoX, so there are no usage-based recommendations for downsizing or decommissioning resources. The actual utilisation of the 807 discovered resources is unknown.
+(`evidence_gap:cost:cloudox-does-not-collect-cloudwatch-utilization-metrics-in-this-version-idle-underutilized-or-right-sizing-recommendations-based-on-actual-usage-are-not-available`)
 
-The absence of CloudWatch utilization data means right-sizing and idle-resource analysis cannot be performed in this version of CloudoX. This is a platform-level limitation, not a configuration choice, and should be factored into any cost-optimisation workstream.
+**Several cost drivers are outside collector coverage.** RDS read replicas, RDS provisioned IOPS, DynamoDB capacity mode, Direct Connect, and S3 storage classes are not captured by the current collectors. If any of these are in use, their cost contribution is not reflected in this view.
+(`evidence_gap:cost:rds-read-replicas-rds-provisioned-iops-dynamodb-capacity-mode-direct-connect-and-s3-storage-classes-are-not-captured-by-the-current-collectors-so-cost-drivers-for-them-are-not-detected`)
 
-The disabled Cloud Control meta-collector means the resource inventory covers only typed collectors. Resources of less common types may be absent from all findings in this view — security, cost, and architecture alike. The true scope of the environment may be broader than what is reflected here.
+**Long-tail resource types may be missing.** The Cloud Control meta-collector was disabled, so discovery is limited to explicitly typed collectors. Resource types outside that set will not appear in any section of this view.
+(`evidence_gap:coverage:cloud-control-meta-collector-was-disabled-long-tail-resource-types-are-limited-to-typed-collector-coverage`)
 
-> **Confidence: Likely** — These gaps are directly evidenced by the discovery run configuration and collector state. Their downstream effect on other sections of this view is real but not fully quantifiable without the missing data.
+> **Confidence: Likely.** The gaps above are confirmed collection limitations, not inferences. Their downstream impact on other sections of this view is real but bounded — security and architecture findings rely on direct resource discovery, which is unaffected by the cost and CloudWatch gaps.

@@ -10,30 +10,34 @@
 
 ## What Needs Attention
 
-One critical, decision-required security exposure stands out and warrants immediate leadership action: a sandbox security group is openly exposing SSH and PostgreSQL to the entire internet. Three medium-severity internet-facing exposures round out the picture and should be confirmed as intentional.
+One critical security exposure demands an immediate decision from leadership. Beyond that, three medium-severity internet-facing configurations should be reviewed and confirmed as intentional.
 
 ### Highest-Priority Issues
 
-**🔴 Critical — Action Required**
+**🔴 Critical — Action required: Sandbox security group open to SSH and PostgreSQL**
 
-| Resource | Exposure | Ports Open to Internet | Decision Needed? |
-|---|---|---|---|
-| cloudox-demo-sandbox-sg-permissive | World-open ingress | SSH (22), PostgreSQL (5432) | **Yes** |
+The security group **cloudox-demo-sandbox-sg-permissive** (eu-central-1, sandbox account) allows unrestricted inbound traffic from the entire internet on port 22 (SSH) and port 5432 (PostgreSQL). This is a verified, critical-severity finding and the only item in this section flagged as requiring a leadership decision.
 
-The security group **cloudox-demo-sandbox-sg-permissive** (Sandbox account, eu-central-1) allows unrestricted inbound traffic from any IP address on port 22 (SSH) and port 5432 (PostgreSQL). Exposing a database port and an administrative access port directly to the internet is a high-likelihood breach vector. Engineering leadership should confirm whether this exposure is intentional and, if not, restrict ingress rules immediately. *(Confidence: Verified)*
+- **Risk:** Any actor on the internet can attempt to connect directly to SSH and a PostgreSQL database endpoint. If those services are reachable, the blast radius includes credential brute-force, data exfiltration, and lateral movement.
+- **Decision needed:** Confirm whether this exposure is intentional (e.g., a short-lived test resource). If not, engineering should restrict ingress to known IP ranges or remove the rules immediately.
 
-**🟡 Medium — Confirm Intent**
+---
 
-Three additional resources in the production Atlas environment carry world-open ingress rules. No immediate decision is flagged, but leadership should confirm these are deliberately internet-facing:
+**🟡 Medium — Confirm intent: Internet-facing production load balancer and associated security groups**
 
-| Resource | Exposure | Ports |
+Three additional findings relate to the production Atlas environment and are likely intentional for a public-facing service, but should be explicitly confirmed:
+
+| Resource | Exposure | Severity |
 |---|---|---|
-| cloudox-demo-atlas-prod-alb (Load Balancer) | Internet-facing scheme | — |
-| cloudox-demo-atlas-prod-sg-edge (Security Group) | World-open ingress | HTTPS (443) |
-| cloudox-demo-atlas-prod-sg-alb (Security Group) | World-open ingress | HTTP (80) |
+| **cloudox-demo-atlas-prod-alb** (load balancer) | Internet-facing scheme | Medium |
+| **cloudox-demo-atlas-prod-sg-edge** (security group) | World-open ingress on 443 (HTTPS) | Medium |
+| **cloudox-demo-atlas-prod-sg-alb** (security group) | World-open ingress on 80 (HTTP) | Medium |
 
-An internet-facing load balancer with open HTTP/HTTPS security groups is a common and often intentional pattern for public-facing services. However, the HTTP (port 80) exposure on **cloudox-demo-atlas-prod-sg-alb** should be reviewed — if traffic is expected to redirect to HTTPS, port 80 ingress may be unnecessary. *(Confidence: Verified)*
+Ports 443 and 80 open to the internet on a production load balancer are a common and expected pattern for a public application. However, the HTTP (port 80) exposure is worth confirming — if it exists only to redirect to HTTPS, that is acceptable; if it serves content directly, it should be reviewed. No decision is flagged as required by the analysis, but leadership should ensure the team has documented these as approved intentional exposures.
 
-**Notable gaps to be aware of:**
-- No AWS Security Hub enablement was discovered across the environment, meaning centralised security findings and compliance checks may not be active.
-- 761 of 807 resources carry no Environment/Stage/Tier tag, limiting the ability to assess blast radius or classify resources by criticality with confidence.
+---
+
+**Notable gaps to be aware of**
+
+- **No AWS Security Hub enablement was discovered.** This means there is no centralised, continuous security findings service active (or its status could not be confirmed). This limits ongoing detection capability.
+- **761 resources carry no Environment/Stage/Tier tag** and rely on inference for classification. This makes it harder to assess blast radius, enforce environment-level controls, or allocate costs accurately. A tagging policy decision would address this at scale.

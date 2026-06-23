@@ -10,40 +10,53 @@
 
 ## Architecture Overview
 
-The environment is a multi-account AWS estate centred on **eu-central-1**, running a small number of clearly separated workloads across distinct lifecycle stages. The dominant pattern is serverless API + managed NoSQL storage, with internet-facing endpoints exposed through API Gateway. Four internet gateways across multiple accounts indicate that VPC-based compute also exists alongside the serverless tier, though the relationship between those two layers is not fully resolved from available evidence.
+The environment is a multi-account AWS estate centred on **eu-central-1**, running a serverless API pattern backed by DynamoDB, with at least four distinct workloads across three accounts and a clear prod/dev/sandbox separation. The dominant design signal is internet-facing API Gateway endpoints fronting per-environment data stores — a shape that carries both dependency and blast-radius implications worth examining before any modernisation work.
+
+> **Confidence: Likely** — derived from graph evidence; some relationships and classifications rely on inference rather than explicit tagging (see Unknowns).
 
 ### Architectural Shape
 
-The estate spans **7 accounts** hosting **807 resources**, with **12 significant workloads** inferred from graph evidence (3 further workloads were demoted as helper or governance constructs, and 3 systems were also identified). The primary workload pattern visible in the evidence is:
+The estate spans **7 accounts** and contains **807 resources**. The primary compute pattern visible in the evidence is serverless: two public API Gateway endpoints are present in **eu-central-1**:
 
-- **API Gateway → DynamoDB** — two public HTTPS endpoints (`https://gfwaiva01f.execute-api.eu-central-1.amazonaws.com` and `https://xdmn5ldmif.execute-api.eu-central-1.amazonaws.com`) front workloads that persist to DynamoDB tables in eu-central-1. Both endpoints are reachable from `internet`, making them externally accessible surfaces.
-- **VPC / IGW presence** — four internet gateways are present across accounts `110019496666` (both eu-central-1 and us-east-1), `105769365151` (us-east-1), and `122980216815` (us-east-1). This signals VPC-based workloads in at least two regions, though no specific compute or service detail is available in this section's evidence.
-- **us-east-1 footprint** — three of the four internet gateways are in us-east-1, suggesting a secondary regional presence that is not reflected in the primary eu-central-1 workload definitions. The relationship between the us-east-1 infrastructure and the named workloads is not established from available evidence.
+| Endpoint | Account |
+|---|---|
+| `https://gfwaiva01f.execute-api.eu-central-1.amazonaws.com` | 105769365151 (Dev) |
+| `https://xdmn5ldmif.execute-api.eu-central-1.amazonaws.com` | 122122642149 (Prod) |
 
-> **Confidence: Likely.** Shape is derived from graph inference. 761 of 807 resources carry no Environment/Stage/Tier tag, so workload boundaries and environment assignments rely on inference rather than explicit tagging.
+Both endpoints are reachable from `internet`, making them externally exposed surfaces. Each is associated with a DynamoDB table in the same account and region:
+
+| DynamoDB Table | Account | Environment |
+|---|---|---|
+| `cloudox-demo-atlas-dev-items` (`arn:aws:dynamodb:eu-central-1:105769365151:table/cloudox-demo-atlas-dev-items`) | 105769365151 | Dev |
+| `cloudox-demo-atlas-prod-items` (`arn:aws:dynamodb:eu-central-1:122122642149:table/cloudox-demo-atlas-prod-items`) | 122122642149 | Prod |
+| `cloudox-demo-sandbox-scratch` (`arn:aws:dynamodb:eu-central-1:161388682021:table/cloudox-demo-sandbox-scratch`) | 161388682021 | Sandbox |
+
+Internet Gateways are present in both **eu-central-1** and **us-east-1** across multiple accounts (`igw-0d14f1dd4e54d5906` in eu-central-1/110019496666; `igw-00ed21b9a0e6596a8`, `igw-0567575921f471548`, `igw-0cff0d66b4fd90803` in us-east-1 across accounts 110019496666, 105769365151, and 122980216815). This indicates VPC infrastructure exists beyond the serverless workloads, though the workloads associated with those gateways are not covered in this section.
 
 ### Environments & Accounts
 
-Three lifecycle environments are distinguishable from the key entities and evidence:
+Three functional environments are identifiable from naming and account separation:
 
-| Environment | Account | Primary Region | Key Evidence |
-|---|---|---|---|
-| **Production** | `122122642149` | eu-central-1 | Workloads: *Cloudox Demo Atlas Prod API* (`cloudox-demo-atlas-prod-api`), *Cloudox* (`cloudox`); DynamoDB table `cloudox-demo-atlas-prod-items` |
-| **Development** | `105769365151` | eu-central-1 | Workloads: *Cloudox Demo Atlas Dev* (`cloudox-demo-atlas-dev`), *Cloudox Demo Atlas Dev API* (`cloudox-demo-atlas-dev-api`); DynamoDB table `cloudox-demo-atlas-dev-items`; API Gateway endpoint `xdmn5ldmif`; IGW `igw-0567575921f471548` (us-east-1) |
-| **Sandbox** | `161388682021` | eu-central-1 | Workload: *Cloudox Demo Sandbox Scratch* (`cloudox-demo-sandbox-scratch`); DynamoDB table `cloudox-demo-sandbox-scratch` |
+| Environment | Account ID | Key Workloads |
+|---|---|---|
+| **Production** | 122122642149 | Cloudox Demo Atlas Prod API (`cloudox-demo-atlas-prod-api`), Cloudox (`cloudox`) |
+| **Development** | 105769365151 | Cloudox Demo Atlas Dev (`cloudox-demo-atlas-dev`), Cloudox Demo Atlas Dev API (`cloudox-demo-atlas-dev-api`) |
+| **Sandbox** | 161388682021 | Cloudox Demo Sandbox Scratch (`cloudox-demo-sandbox-scratch`) |
 
-Account `110019496666` hosts two internet gateways (eu-central-1 and us-east-1) but does not map to a named workload in this section's evidence — its role is unknown. Account `122980216815` similarly has an IGW in us-east-1 with no workload attribution available.
+Account-level isolation between prod and dev is a positive structural choice — it limits the blast radius of a misconfiguration or credential compromise in dev from reaching prod data. The sandbox account (`161388682021`) appears to hold exploratory or transient workloads; **Cloudox Demo Sandbox Scratch** is classified as *Assumed* confidence, meaning its purpose and lifecycle are inferred rather than confirmed.
 
-The *Cloudox* workload (`cloudox`, account `122122642149`) is the only **Verified**-confidence entity; all others are **Likely** or **Assumed**.
+One workload — **Cloudox** (`cloudox`, account 122122642149, eu-central-1) — is classified at *Verified* confidence and sits in the production account alongside the Atlas Prod API. Its relationship to the API workload is not resolved in this section.
+
+A system-level entity **Cloudox Demo Atlas Dev** also appears without an account binding, suggesting a cross-account or logical grouping construct whose membership is not fully resolved.
 
 ### Key Patterns
 
-**Serverless-first, internet-exposed API tier.** The Atlas workloads (dev and prod) follow a consistent pattern: API Gateway endpoint → (implied compute/integration layer) → DynamoDB. Both the dev API endpoint (`xdmn5ldmif`) and at least one prod-side endpoint (`gfwaiva01f`) are directly reachable from the internet. There is no evidence in this section of a WAF, CloudFront distribution, or private API configuration in front of these endpoints — that is a gap worth validating.
+**Serverless API + DynamoDB per environment** is the clearest repeating pattern. Dev and prod mirror each other structurally (API Gateway → DynamoDB), which is good for parity but means any architectural debt in the pattern is replicated across environments.
 
-**Account-per-environment isolation.** Production, development, and sandbox each occupy a dedicated AWS account, which is a sound isolation boundary. The sandbox account (`161388682021`) has its own DynamoDB table (`cloudox-demo-sandbox-scratch`), consistent with an experimental or scratch-pad use.
+**Internet exposure is the primary ingress path.** Both API Gateway endpoints are internet-facing with no evidence in this section of private API configurations, WAF associations, or custom domain fronting. This is a design area to validate — particularly for the production endpoint (`xdmn5ldmif.execute-api.eu-central-1.amazonaws.com`).
 
-**Tagging debt is a structural risk.** 761 of 807 resources (≈94%) have no Environment/Stage/Tier tag. This undermines cost allocation, automated governance, and any tooling that relies on tag-based targeting. Until tagging is remediated, workload boundaries and environment assignments across the estate remain inferred rather than authoritative.
+**Multi-region VPC footprint.** Internet Gateways in us-east-1 (across at least three accounts) indicate VPC-based workloads in a second region. Whether these represent active workloads, legacy infrastructure, or DR capacity is not determinable from this section's evidence.
 
-**Unresolved us-east-1 footprint.** Three IGWs in us-east-1 across accounts `110019496666`, `105769365151`, and `122980216815` indicate active VPC infrastructure in a region where no named workload is defined in available evidence. Whether this represents active workloads, legacy infrastructure, or DR capacity is not known from this section's evidence and warrants direct investigation.
+**Tagging gap is a structural risk.** 761 of 807 resources carry no Environment/Stage/Tier tag, meaning workload classification, cost attribution, and environment boundary enforcement all rely on inference. This limits the reliability of automated governance, policy targeting, and future IaC drift detection.
 
 ![AWS Organizations account structure](./diagrams/architect-org-account-structure.png)

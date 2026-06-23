@@ -18,6 +18,7 @@ Start with the **[Knowledge Views index](./views/README.md)**, then open the vie
 | [Operations](./views/operations/README.md) | Platform / Operations Engineers |
 | [Security](./views/security/README.md) | Security & Governance teams |
 | [FinOps](./views/finops/README.md) | FinOps / Finance |
+| [Reference](./views/reference/README.md) | Engineers, architects, consultants & security reviewers — deterministic inventory and relationship tables straight from the knowledge graph. |
 
 Each view is a self-contained folder: its `README.md` indexes the view's sections, every section is a standalone Markdown file you can read on its own, and `diagrams/` holds the rendered architecture diagrams.
 

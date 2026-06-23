@@ -10,23 +10,27 @@
 
 ## Operations & Reliability
 
-The environment is broadly well-captured: 807 resources are recorded across 15 VPCs and 63 subnets, with no coverage gaps identified. A single load balancer is present, and 25 internet-facing access paths have been observed — a figure worth keeping in mind when reviewing exposure and blast radius.
+807 resources were captured across this environment with no coverage gaps identified in the collected data. The two known unknowns below are worth keeping in mind when interpreting completeness.
+
+> **Confidence: Verified** — derived from complete graph evidence for the domains in scope (networking, coverage).
 
 ### Reliability Signals
 
-The networking fabric spans **15 VPCs** and **63 subnets**, providing the structural segmentation that underpins availability and fault isolation. One load balancer is in use, distributing traffic within this topology.
+No reliability signal items were present in this section's package. Coverage breadth is the primary reliability-relevant data point available here: 807 resources were captured with 0 coverage gaps flagged, suggesting the typed collectors reached their intended targets without missing resource categories they were configured to collect.
 
-Two AWS-managed prefix lists are referenced in the environment (`pl-66a5400f` and `pl-6ea54007`, both in `eu-central-1`), indicating that at least some security group or routing rules rely on AWS-maintained IP ranges — a pattern that reduces manual maintenance burden for those specific rules.
+Two AWS-managed prefix lists are referenced in the networking evidence:
+- **Amazon S3 prefix list** (`pl-6ea54007`, `arn:aws:ec2:eu-central-1:aws:prefix-list/pl-6ea54007`) — eu-central-1
+- **Amazon DynamoDB prefix list** (`pl-66a5400f`, `arn:aws:ec2:eu-central-1:aws:prefix-list/pl-66a5400f`) — eu-central-1
 
-**25 internet-facing access paths** are observed. This is the primary reliability-adjacent signal to scrutinise: each path represents a potential ingress point that must remain intentional, correctly routed, and protected against disruption or misconfiguration.
+The presence of these AWS-managed prefix lists in eu-central-1 indicates that at least some network paths in this region are scoped to AWS service endpoints (S3 and DynamoDB), which is a common pattern for keeping service traffic off the public internet via VPC routing or security group rules.
 
 ### Operational Concerns
 
-Two meta-collection gaps reduce the completeness of this picture and should be treated as material unknowns:
+Two meta-collector gaps reduce the confidence that the 807-resource count represents the full AWS-visible estate:
 
-- **Resource Explorer was disabled or unavailable.** Without it, the full breadth of AWS-visible resources could not be cross-checked against what typed collectors found. Resources in less-common services or regions may be absent from the inventory.
-- **Cloud Control was disabled.** Long-tail resource types — those not covered by dedicated typed collectors — are not represented. Operational tooling, custom configurations, or newer AWS resource types may be missing.
+| Concern | Impact |
+|---|---|
+| **Resource Explorer meta-collector disabled or unavailable** | AWS-visible breadth could not be cross-checked against the typed collector results. Resources in regions or of types not covered by typed collectors may be absent. |
+| **Cloud Control meta-collector disabled** | Long-tail and newer resource types that lack a dedicated typed collector are not represented. The inventory may undercount less common resource types. |
 
-The practical consequence is that the **807 resources captured represent a lower bound**, not a confirmed total. Operational runbooks, alerting, and change-management processes that rely on this inventory should account for the possibility of uncatalogued resources until both meta-collectors can be enabled.
-
-> **Confidence: Verified** — figures and signals above are derived from complete graph evidence for the networking and coverage domains. The unknowns relate to deliberate collection scope, not data quality within what was collected.
+Neither gap affects the reliability of what *was* collected, but both mean the inventory should not be treated as exhaustive. Enabling Resource Explorer and Cloud Control collection in a future run would allow a completeness cross-check.

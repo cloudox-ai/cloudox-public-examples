@@ -10,28 +10,33 @@
 
 ## Missing Cost Evidence
 
-The cost picture for this environment is incomplete. Spend figures are unavailable because Cost Explorer collection was disabled during the discovery run (`CLOUDOX_COST__ENABLED=false` / `--no-collect-costs`). Everything in this FinOps view is therefore derived from discovered architecture alone — no dollar amounts, no trend lines, and no validated optimization savings can be stated. Treat all cost driver observations as directional until actual billing data is collected.
+The cost picture for this environment is incomplete. Spend figures are entirely unavailable for this run, and several architectural cost drivers fall outside current collector coverage. Every cost observation elsewhere in this view is derived from discovered architecture, not from billing data — treat it as directional, not financial.
 
-> **Confidence: Likely** — Architecture-derived drivers are grounded in real discovered resources, but without spend data, no cost attribution or prioritization by dollar impact is possible.
+*Confidence: Likely — architecture-derived analysis only; no spend data collected.*
 
 ### Cost Data Gaps
 
-Three distinct gaps limit what can be answered right now:
+Three distinct gaps limit what can be answered today:
 
-| Gap | What it blocks |
+| Gap | What it means for FinOps |
 |---|---|
-| Cost Explorer collection disabled | All spend figures, trend analysis, and service-level cost breakdowns (`evidence_gap:cost:cost-explorer-collection-is-disabled-cloudox-cost-enabled-false-no-collect-costs-spend-figures-are-unavailable-the-analysis-below-is-derived-from-the-discovered-architecture-only`) |
-| CloudWatch utilization metrics not collected | Idle resource detection, underutilization flags, and right-sizing recommendations based on actual usage (`evidence_gap:cost:cloudox-does-not-collect-cloudwatch-utilization-metrics-in-this-version-idle-underutilized-or-right-sizing-recommendations-based-on-actual-usage-are-not-available`) |
-| Specific service attributes not captured | RDS read replicas, RDS provisioned IOPS, DynamoDB capacity mode, Direct Connect, and S3 storage classes — cost drivers for these services are not detected (`evidence_gap:cost:rds-read-replicas-rds-provisioned-iops-dynamodb-capacity-mode-direct-connect-and-s3-storage-classes-are-not-captured-by-the-current-collectors-so-cost-drivers-for-them-are-not-detected`) |
+| **No spend data** — Cost Explorer collection is disabled (`CLOUDOX_COST__ENABLED=false` / `--no-collect-costs`) | Actual dollar figures, month-over-month trends, and service-level cost breakdowns are unavailable. All cost reasoning in this view is architectural inference only. |
+| **No utilization metrics** — CloudWatch metrics are not collected in this version | Idle or underutilised resources cannot be identified from usage data. Right-sizing and waste candidates cannot be validated against actual consumption. |
+| **Collector blind spots** — RDS read replicas, RDS provisioned IOPS, DynamoDB capacity mode, Direct Connect, and S3 storage classes are not captured | These are often significant line items. Their cost drivers are not detected and are therefore absent from this analysis. |
 
-Two additional coverage gaps mean the resource inventory itself may be incomplete, which compounds the cost blind spots: the Cloud Control meta-collector was disabled (`evidence_gap:coverage:cloud-control-meta-collector-was-disabled-long-tail-resource-types-are-limited-to-typed-collector-coverage`) and Resource Explorer was unavailable for cross-checking (`evidence_gap:coverage:resource-explorer-meta-collector-was-disabled-or-unavailable-aws-visible-breadth-could-not-be-cross-checked`). Resources not discovered cannot be costed.
+Two additional coverage gaps affect the completeness of the resource inventory itself, which in turn limits cost attribution confidence:
+
+- The **Cloud Control meta-collector** was disabled, so long-tail resource types beyond typed collector coverage may be missing from the inventory.
+- The **Resource Explorer meta-collector** was disabled or unavailable, meaning the full breadth of AWS-visible resources could not be cross-checked against what was discovered.
+
+The practical consequence: the environment may contain billable resources that are not reflected anywhere in this view.
 
 ### What to Enable
 
-To move from architecture-derived observations to a fully evidenced FinOps view, the following collection capabilities should be enabled on the next discovery run:
+To move from architecture-derived inference to evidence-grounded cost analysis, the following collection capabilities should be enabled before the next run:
 
-1. **Cost Explorer collection** — Re-run with `CLOUDOX_COST__ENABLED=true` (or without `--no-collect-costs`). This is the single highest-priority change; it unlocks spend figures, service breakdowns, and dollar-weighted prioritization of every other finding.
-2. **CloudWatch utilization metrics** — Once available in a future CloudoX version, this will enable idle and underutilized resource identification and right-sizing candidates grounded in actual usage rather than configuration alone.
-3. **Cloud Control and Resource Explorer meta-collectors** — Enabling these will broaden resource coverage and allow cross-checking of inventory completeness, reducing the risk that billable resources are missing from the analysis.
+1. **Enable Cost Explorer collection** — set `CLOUDOX_COST__ENABLED=true` (or remove `--no-collect-costs`). This unlocks actual spend figures, service breakdowns, and trend data across complete billing periods.
+2. **Enable CloudWatch utilization metric collection** (when available in your CloudoX version) — required to identify idle resources, validate right-sizing candidates, and quantify waste with confidence.
+3. **Enable the Cloud Control and Resource Explorer meta-collectors** — broadens resource inventory coverage and allows cross-checking, reducing the risk of undetected billable resources.
 
-No optimization candidates can be validated or dollar-quantified until at least Cost Explorer collection is active. The architectural cost drivers identified elsewhere in this view should be treated as a prioritization queue to revisit once billing data is available.
+Until these gaps are resolved, cost optimization candidates identified elsewhere in this view should be treated as requiring validation against actual billing data before any action is taken.

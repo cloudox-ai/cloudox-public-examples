@@ -10,11 +10,11 @@
 
 ## Evidence Appendix
 
-This appendix identifies the cloud accounts and workloads that form the basis of this Executive View. No raw evidence items were available in this discovery run, so the section serves as a reference index only.
+This appendix identifies the accounts and workloads that underpin the analysis in this view. No raw evidence items were surfaced for this section.
 
 ### Key Entities
 
-The following accounts and workloads were identified within the **cloudox-demo** workspace:
+The following cloud accounts and workloads were identified as in-scope for this view.
 
 | Friendly Name | Type | Region | Confidence |
 |---|---|---|---|
@@ -25,8 +25,4 @@ The following accounts and workloads were identified within the **cloudox-demo**
 | Log Archive Account | Account | — | Likely |
 | Cloudox Demo Atlas Prod API | Workload | eu-central-1 | Likely |
 
-> **Confidence note:** The Log Archive Account and the Cloudox Demo Atlas Prod API workload are rated **Likely** rather than Verified — treat any findings tied to these entities with appropriate caution until confirmed.
-
-### Evidence
-
-No evidence items were available for this section. Findings and conclusions elsewhere in this view are drawn from the entities listed above; no provider-native evidence references can be cited here.
+Two entities carry a **Likely** confidence rating — Log Archive Account and the Cloudox Demo Atlas Prod API workload — meaning their classification or scope boundary has not been fully verified. Decisions that depend on the completeness of log archiving or the production API workload boundary should account for this uncertainty.

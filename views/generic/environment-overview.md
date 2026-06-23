@@ -10,17 +10,17 @@
 
 ## Environment Overview
 
-This is a multi-account AWS organisation structured around a clear separation of concerns: dedicated accounts for management, audit, log archiving, platform services, workload delivery (dev and prod), and sandboxing. Across these seven accounts, **807 resources** have been discovered, hosting **12 significant workloads** (out of 15 inferred; 3 classified as helper/governance).
+This is a multi-account AWS organisation built around a clear separation of concerns: dedicated accounts for workload delivery, platform services, audit, log archiving, sandbox experimentation, and central management. Across these seven accounts, **807 resources** have been discovered, spanning at least two AWS regions. Four significant workloads are running, supported by one platform system, with one additional workload classified as a helper or governance construct.
 
-> **Confidence: Likely** — Evidence is derived from graph analysis. Some classification relies on inference rather than explicit tagging, and two meta-collectors were unavailable during discovery, meaning the full resource breadth may be wider than what is represented here.
+> **Confidence: Likely** — Account structure and workload classification are derived from graph evidence. Some relationships and environment assignments rely on inference where tagging is absent.
 
 ### Scope & Accounts
 
-Seven accounts make up this environment:
+Seven accounts make up the observed scope:
 
 | Friendly Name | Account ID | Confidence | Role |
 |---|---|---|---|
-| Management Account | 110319895932 | Verified | Org root / management |
+| Management Account | 110319895932 | Verified | Org management |
 | Workload Dev Account | 105769365151 | Verified | Development workloads |
 | Workload Prod Account | 122122642149 | Verified | Production workloads |
 | Sandbox Ma Account | 161388682021 | Verified | Sandbox / experimentation |
@@ -28,27 +28,41 @@ Seven accounts make up this environment:
 | Log Archive Account | 122980216815 | Likely | Centralised log storage |
 | Platform Account | 150982215529 | Likely | Shared platform services |
 
-Three accounts — Audit, Log Archive, and Platform — are classified at **Likely** confidence, meaning their roles are inferred from evidence rather than confirmed by explicit tagging or naming conventions. The Log Archive account's environment stage is currently **Unknown** (`122980216815-unknown`), indicating no stage tag or strong signal was found to classify it further.
+Three environments are confirmed with high confidence: **Development Environment** (105769365151-development), **Production Environment** in the Workload Prod Account (122122642149-production), and **Sandbox Environment** (161388682021-sandbox). Two further production-tier environments are inferred with lower confidence: one in the Platform Account (150982215529-production) and one in the Log Archive Account whose environment classification is currently unknown (122980216815-unknown).
 
-Three workloads were demoted from the significant workload list as helper or governance constructs rather than primary application workloads.
+The Audit Account (110019496666) and Log Archive Account (122980216815) follow a pattern consistent with AWS Control Tower or a similar landing zone, though this is not explicitly confirmed in this section's evidence.
 
 ### Regions & Footprint
 
-Active resource evidence spans at least two AWS regions:
+Evidence points to activity in at least two AWS regions:
 
-- **eu-central-1 (Frankfurt)** — API Gateway endpoints (`https://gfwaiva01f.execute-api.eu-central-1.amazonaws.com`, `https://xdmn5ldmif.execute-api.eu-central-1.amazonaws.com`), DynamoDB tables in the Dev account (`arn:aws:dynamodb:eu-central-1:105769365151:table/cloudox-demo-atlas-dev-items`), Prod account (`arn:aws:dynamodb:eu-central-1:122122642149:table/cloudox-demo-atlas-prod-items`), and Sandbox account (`arn:aws:dynamodb:eu-central-1:161388682021:table/cloudox-demo-sandbox-scratch`), plus internet gateways in the Audit account (`arn:aws:ec2:eu-central-1:110019496666:internet-gateway/igw-0d14f1dd4e54d5906`).
-- **us-east-1 (N. Virginia)** — Internet gateways present in the Audit account (`arn:aws:ec2:us-east-1:110019496666:internet-gateway/igw-00ed21b9a0e6596a8`), Workload Dev account (`arn:aws:ec2:us-east-1:105769365151:internet-gateway/igw-0567575921f471548`), and Log Archive account (`arn:aws:ec2:us-east-1:122980216815:internet-gateway/igw-0cff0d66b4fd90803`).
+- **eu-central-1 (Frankfurt)** — API Gateway endpoints, DynamoDB tables, and internet gateways are all observed here. This appears to be the primary region for workload resources.
+- **us-east-1 (N. Virginia)** — Internet gateways are present across multiple accounts (110019496666, 105769365151, 122980216815), indicating VPC infrastructure with internet connectivity in this region as well.
 
-The presence of internet gateways in multiple accounts — including Audit and Log Archive — indicates that VPCs with public routing exist beyond just the workload accounts. The practical significance of those gateways (whether actively used or residual) is not determinable from available evidence.
+Specific internet-facing API Gateway endpoints observed:
+- `https://gfwaiva01f.execute-api.eu-central-1.amazonaws.com` (Workload Dev Account, 105769365151)
+- `https://xdmn5ldmif.execute-api.eu-central-1.amazonaws.com` (Workload Dev Account, 105769365151)
 
-> **Note:** The discovery summary reports **0 regions** in the structured scope metadata, which conflicts with the regional evidence above. This is likely a metadata gap rather than a true zero-region footprint. The Resource Explorer meta-collector was disabled or unavailable, which means AWS-visible regional breadth could not be independently cross-checked.
+DynamoDB tables with confirmed presence:
+- `cloudox-demo-atlas-dev-items` — eu-central-1, Workload Dev Account (105769365151)
+- `cloudox-demo-atlas-prod-items` — eu-central-1, Workload Prod Account (122122642149)
+- `cloudox-demo-sandbox-scratch` — eu-central-1, Sandbox Ma Account (161388682021)
+
+The naming pattern (`cloudox-demo-atlas-*`) suggests a workload named **Atlas** with a dev/prod promotion path, and a separate scratch table in the sandbox account.
+
+> **Note:** The Resource Explorer and Cloud Control meta-collectors were unavailable during discovery. The regional footprint described here is based on typed collector evidence only; additional regions or resource types may exist that are not reflected in this section.
 
 ### What This Environment Is
 
-This is a **workload-hosting AWS organisation** built around the `cloudox-demo` workspace. The naming conventions (`cloudox-demo-atlas-dev-items`, `cloudox-demo-atlas-prod-items`, `cloudox-demo-sandbox-scratch`) point to an application called **Atlas** with at least two promoted stages — development and production — and an active sandbox for experimentation.
+This is the **cloudox-demo** workspace — a multi-account AWS environment structured around a workload called **Atlas**, which has distinct development and production deployments, each with its own account, API Gateway surface, and DynamoDB persistence layer. A sandbox account provides an isolated space for experimentation, separate from the promotion path.
 
-The environment follows a recognisable landing-zone pattern: separate accounts for management, audit, and log archiving sit alongside workload and platform accounts. Internet-facing components are confirmed in eu-central-1 (public API Gateway endpoints) and internet gateways exist across multiple accounts and regions, indicating intentional public connectivity in at least the workload tier.
+The presence of dedicated Audit, Log Archive, and Management accounts points to a governance-aware landing zone design. The Platform Account adds a layer of shared services, though its specific contents are not detailed in this section's evidence.
 
-A material tagging gap exists: **761 of 807 resources carry no Environment, Stage, or Tier tag**, meaning workload classification throughout this view relies on inference. Readers should treat workload boundaries and environment assignments as indicative rather than authoritative until tagging is improved. Additionally, the absence of the Cloud Control meta-collector means long-tail or newer AWS resource types may be under-represented in the 807-resource count.
+Internet connectivity is established in both eu-central-1 and us-east-1 via internet gateways across multiple accounts, and the Atlas workload exposes public API endpoints in eu-central-1.
+
+**Key unknowns to be aware of:**
+- 761 of the 807 resources carry no Environment, Stage, or Tier tag; their classification depends on inference and may not be fully accurate.
+- Resource Explorer and Cloud Control meta-collectors were not available, so the full breadth of resource types and regions cannot be independently verified from this section.
+- The environment classification for the Log Archive Account (122980216815) remains unresolved.
 
 ![AWS Organizations account structure](./diagrams/generic-org-account-structure.png)

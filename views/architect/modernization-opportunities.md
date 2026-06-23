@@ -10,35 +10,33 @@
 
 ## Modernization Opportunities
 
-The single confirmed modernization signal in this discovery run is a resilience gap in the production database tier. Addressing it is low-friction relative to its availability impact, making it the highest-priority architectural action available from current evidence.
+> **Confidence: Likely** — Derived from graph evidence; some unknowns remain. Spend data is unavailable for this run; all analysis is architecture-derived only.
+
+The single confirmed modernization candidate in this section is a resilience gap in the production data tier. No cost-based optimization candidates were identified from the discovered architecture (spend collection is disabled; utilization metrics are not collected in this version).
 
 ### Modernization Candidates
 
-One candidate was identified with **Verified** confidence:
+One item warrants architect attention:
 
 | Resource | Issue | Impact | Priority |
 |---|---|---|---|
-| `cloudox-demo-atlas-prod-pg` | Single-AZ RDS DBInstance | Reduced availability / recovery posture | 4 |
+| `cloudox-demo-atlas-prod-pg` | Single-AZ DBInstance — no Multi-AZ standby configured | Reduced availability / recovery posture | 4 |
 
-**`cloudox-demo-atlas-prod-pg`** (`modernization_opportunity:architecture:cloudox-demo-atlas-prod-pg`) is a production RDS instance deployed in a single Availability Zone. A zone-level failure would result in downtime and potential data loss with no automatic failover path. Given its placement in the `atlas-prod` account alongside the DynamoDB table `arn:aws:dynamodb:eu-central-1:122122642149:table/cloudox-demo-atlas-prod-items`, this instance is likely part of a production workload where availability expectations are higher than a single-AZ posture can satisfy.
+**`cloudox-demo-atlas-prod-pg`** is a production RDS DBInstance running without a Multi-AZ standby (`modernization_opportunity:architecture:cloudox-demo-atlas-prod-pg`). In its current configuration, a single Availability Zone failure could result in unplanned downtime or data loss for the production workload. This is a verified finding against the resource itself, though account and region metadata for the instance were not resolved in this discovery run.
 
-No further modernization candidates are present in the current evidence package. The broader inventory — 807 resources across 7 accounts — may contain additional candidates, but CloudWatch utilization metrics are not collected in this version, so idle-resource, right-sizing, or compute-modernization signals (e.g., graviton migration, serverless offload) cannot be derived from current data.
+This finding sits alongside the production DynamoDB table `cloudox-demo-atlas-prod-items` (account `122122642149`, `eu-central-1`) and the production API Gateway endpoint `https://xdmn5ldmif.execute-api.eu-central-1.amazonaws.com` — both of which are in the same environment tier. A zone failure affecting `cloudox-demo-atlas-prod-pg` would likely impact the broader production stack that depends on it.
 
-> **Confidence note:** The single-AZ finding is Verified. The absence of other candidates reflects the limits of the current collection scope, not a clean bill of health.
+> **Note:** 761 resources have no Environment / Stage / Tier tag and rely on inference for classification. The production boundary drawn here is based on inferred tagging and may not be complete.
 
 ### Recommended Improvements
 
-**Enable Multi-AZ on `cloudox-demo-atlas-prod-pg`.**
-Activating Multi-AZ creates a synchronous standby replica in a second AZ and enables automatic failover, directly closing the availability gap. This is an in-place RDS configuration change and does not require re-architecture of the surrounding workload. Evaluate during a low-traffic window, as the promotion step involves a brief I/O pause.
+**Enable Multi-AZ standby on `cloudox-demo-atlas-prod-pg`.** AWS RDS Multi-AZ provides synchronous replication to a standby instance in a second AZ, with automatic failover typically completing in 60–120 seconds. For a production datastore, this is the standard resilience baseline.
 
-**Dependency consideration:** Before enabling Multi-AZ, confirm that any application layer connecting to this instance (likely within the `atlas-prod` account) uses the RDS endpoint DNS name rather than a hardcoded IP, so failover is transparent.
+- **Action:** Evaluate enabling Multi-AZ on `cloudox-demo-atlas-prod-pg`. This can be applied to a running instance with a brief maintenance window or during the next scheduled maintenance period.
+- **Design consideration:** Confirm whether the application connection layer (likely via the production API Gateway endpoint) uses the RDS-provided DNS endpoint rather than a hardcoded IP — a prerequisite for transparent failover.
+- **Cost note:** Multi-AZ doubles the instance-hour cost for the DBInstance. Exact cost impact is not available (spend collection disabled), but this should be weighed against the recovery time objective (RTO) and recovery point objective (RPO) requirements for the production workload.
 
-**Deferred opportunities (data gaps):** The following modernization dimensions cannot be assessed until collection gaps are closed:
-
-- *Right-sizing / idle resources* — CloudWatch utilization metrics are not collected; no usage-based recommendations are possible.
-- *DynamoDB capacity mode optimisation* — capacity mode is not captured by current collectors (`arn:aws:dynamodb:eu-central-1:122122642149:table/cloudox-demo-atlas-prod-items` and peers).
-- *RDS IOPS and read-replica patterns* — not captured; over-provisioned IOPS or missing read replicas cannot be detected.
-- *S3 storage class tiering* — not captured; Intelligent-Tiering or lifecycle opportunities are unknown.
-- *Tagging coverage* — 761 of 807 resources carry no Environment/Stage/Tier tag, which limits workload-scoped analysis and makes it harder to target modernization efforts by environment.
-
-Enabling cost collection (`CLOUDOX_COST__ENABLED`) and CloudWatch metric collection in a future run would unlock spend-attributed and utilisation-driven recommendations across the full estate.
+**Gaps limiting further recommendations:**
+- CloudWatch utilization metrics are not collected in this version, so idle, underutilized, or right-sizing opportunities cannot be assessed.
+- RDS read replicas, provisioned IOPS, DynamoDB capacity mode, Direct Connect, and S3 storage classes are outside current collector scope — cost drivers for those resource types are not detected.
+- Without spend data, no dollar-value prioritization of modernization work is possible from this run.

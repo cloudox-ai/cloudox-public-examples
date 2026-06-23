@@ -10,35 +10,56 @@
 
 ## Evidence Appendix
 
-> **Confidence: Unknown** — No intelligence items or evidence references were available for this section. The entity reference table below is drawn from verified discovery metadata only. No provider-native evidence records were present in this package.
+> **Confidence: Unknown** — No intelligence items or provider-native evidence references were available for this section. The entity reference below is derived from discovery metadata only. Treat this appendix as a traceability index, not a validated evidence set.
 
-This appendix lists the key security entities identified across the in-scope accounts and regions. These entities are referenced throughout the Security view. No supporting evidence items or evidence references were available to cite for this section; governance and security teams should treat the absence of linked evidence as a material gap requiring direct validation.
+This appendix lists the key security entities identified across the in-scope accounts and provides a reference point for tracing findings discussed elsewhere in this view back to their source resources. No provider-native evidence items (e.g. AWS Config rules, Security Hub findings, CloudTrail records) were present in the package for this section.
 
 ### Entity Reference
 
-The following entities were identified during discovery. Confidence ratings reflect the reliability of the entity identification itself, not any security assessment.
+The following entities were identified during discovery. Confidence ratings reflect the reliability of the entity identification itself, not any associated security assessment.
 
-| Friendly Name | Type | Account ID | Region | Identifier | Confidence |
-|---|---|---|---|---|---|
-| Management Account | Account | 110319895932 | — | `110319895932` | Verified |
-| Sandbox Ma Account | Account | 161388682021 | — | `161388682021` | Verified |
-| Workload Dev Account | Account | 105769365151 | — | `105769365151` | Verified |
-| Workload Prod Account | Account | 122122642149 | — | `122122642149` | Verified |
-| Log Archive Account | Account | 122980216815 | — | `122980216815` | Likely |
-| Cloudox Demo Sandbox Sg Permissive | Resource (Security Group) | 161388682021 | eu-central-1 | `sg-054446d655de1ee7f` | Verified |
-| Cloudox Demo Atlas Prod Sg ALB | Resource (Security Group) | 122122642149 | eu-central-1 | `sg-06f2b4190bf01d261` | Verified |
-| Public Subnet (eu-central-1) | Subnet | 122122642149 | eu-central-1 | `subnet-016c22941a019a137` | Verified |
-| Public Subnet (eu-central-1) | Subnet | 105769365151 | eu-central-1 | `subnet-0f64d71c952a7898a` | Verified |
-| Public Subnet (eu-central-1) | Subnet | 105769365151 | eu-central-1 | `subnet-065f522206524ab12` | Verified |
-| Public Subnet (eu-central-1) | Subnet | 122122642149 | eu-central-1 | `subnet-013a24d318ed6f3d0` | Verified |
-| Public Subnet (eu-central-1) | Subnet | 161388682021 | eu-central-1 | `subnet-029e2cceb3d0beff7` | Verified |
+#### Accounts
 
-**Notes for Security & Governance teams:**
+| Friendly Name | Account ID | Confidence |
+|---|---|---|
+| Management Account | `110319895932` | Verified |
+| Sandbox Ma Account | `161388682021` | Verified |
+| Workload Dev Account | `105769365151` | Verified |
+| Workload Prod Account | `122122642149` | Verified |
+| Log Archive Account | `122980216815` | Likely |
 
-- The **Log Archive Account** (`122980216815`) carries only a *Likely* confidence rating on its identification — its role as a log archive account should be confirmed directly before relying on it for audit or compliance purposes.
-- Two security groups are surfaced as key entities: `sg-054446d655de1ee7f` (named *Permissive* in the Sandbox account) and `sg-06f2b4190bf01d261` (ALB security group in the Workload Prod account). Their naming and placement are noted here for traceability; refer to the relevant findings sections of this view for any associated risk assessments.
-- All subnets identified are in the **eu-central-1** region and are labelled as public subnets across three accounts (Sandbox, Workload Dev, Workload Prod).
+> **Note on Log Archive Account (`122980216815`):** Confidence is rated **Likely** rather than Verified. Security & Governance teams should confirm this account's role and ensure log delivery and access controls are validated independently.
+
+#### Security Groups
+
+| Friendly Name | Resource ID | Account | Region | Confidence |
+|---|---|---|---|---|
+| Cloudox Demo Sandbox Sg Permissive | `sg-054446d655de1ee7f` | Sandbox Ma Account (`161388682021`) | eu-central-1 | Verified |
+| Cloudox Demo Atlas Prod Sg ALB | `sg-06f2b4190bf01d261` | Workload Prod Account (`122122642149`) | eu-central-1 | Verified |
+
+> The name **Cloudox Demo Sandbox Sg Permissive** (`sg-054446d655de1ee7f`) warrants attention from a governance perspective — the "Permissive" designation in the resource name suggests broad ingress or egress rules. Security teams should cross-reference this entity with the network exposure findings covered in the relevant section of this view.
+
+#### Public Subnets
+
+Five public subnets were identified across three accounts, all in `eu-central-1`.
+
+| Subnet ID | Account | Region | Confidence |
+|---|---|---|---|
+| `subnet-016c22941a019a137` | Workload Prod Account (`122122642149`) | eu-central-1 | Verified |
+| `subnet-013a24d318ed6f3d0` | Workload Prod Account (`122122642149`) | eu-central-1 | Verified |
+| `subnet-0f64d71c952a7898a` | Workload Dev Account (`105769365151`) | eu-central-1 | Verified |
+| `subnet-065f522206524ab12` | Workload Dev Account (`105769365151`) | eu-central-1 | Verified |
+| `subnet-029e2cceb3d0beff7` | Sandbox Ma Account (`161388682021`) | eu-central-1 | Verified |
+
+All five subnets are classified as public. Security & Governance teams should verify that resources placed in these subnets are intentionally internet-reachable and that appropriate security group and network ACL controls are in place.
 
 ### Evidence
 
-No evidence found for this subsection — no provider-native evidence references were present in the package for this section. Security & Governance teams should validate entity configurations, policy attachments, and audit log coverage directly against the provider console or API outputs.
+No provider-native evidence references (e.g. Security Hub findings, Config rule evaluations, CloudTrail events) were present in this section's package. This is a material gap for a security view — the entities above cannot be assessed for compliance posture, misconfiguration, or active findings from this section alone.
+
+Governance teams should treat the absence of evidence references here as a signal to validate that:
+- AWS Security Hub (or equivalent) is enabled and aggregating findings across all four accounts.
+- AWS Config is recording in all relevant regions and accounts.
+- Log delivery to the Log Archive Account (`122980216815`) is confirmed and auditable.
+
+Findings and evidence discussed in other sections of this view should be cross-referenced against the entity identifiers listed above.

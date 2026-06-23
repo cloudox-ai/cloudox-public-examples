@@ -10,11 +10,11 @@
 
 ## Cost Reference Appendix
 
-This appendix catalogues the accounts and workloads that form the cost boundary for this FinOps view. Use it to cross-reference entities mentioned elsewhere in the view against their account IDs and confidence levels. No provider-native cost evidence (billing exports, Cost Explorer data, or equivalent) was available to CloudoX at the time this view was generated — see the Evidence sub-section below.
+This appendix catalogues the accounts and workloads that form the cost boundary for this FinOps view. Use it to cross-reference entities mentioned in other sections against their account IDs and confidence levels. No provider-native billing evidence was available to CloudoX at the time this view was generated.
 
 ### Cost Entity Reference
 
-The following accounts and workloads were identified within the `cloudox-demo` workspace. Confidence reflects how firmly each entity's identity and boundary have been established.
+The following accounts and workloads were identified within the `cloudox-demo` workspace. Confidence reflects how firmly each entity was established during discovery.
 
 **Accounts**
 
@@ -38,13 +38,8 @@ The following accounts and workloads were identified within the `cloudox-demo` w
 | Cloudox Demo Atlas Dev API | cloudox-demo-atlas-dev-api | Workload Dev Account (105769365151) | eu-central-1 | Likely |
 | Cloudox Demo Sandbox Scratch | cloudox-demo-sandbox-scratch | Sandbox Ma Account (161388682021) | eu-central-1 | Assumed |
 
-> **Confidence note:** Entities marked *Likely* have been inferred with reasonable confidence but have not been fully verified. The *Assumed* entry (Cloudox Demo Sandbox Scratch) should be treated as provisional — validate its account association and cost attribution before acting on any figures tied to it.
+The majority of workload activity is concentrated in `eu-central-1`. Production workloads sit in the Workload Prod Account; development workloads in the Workload Dev Account. The Sandbox Ma Account hosts a scratch workload identified with lower confidence (Assumed) — cost attribution for that workload should be treated cautiously until confirmed.
 
 ### Evidence
 
-No provider-native cost evidence was available to CloudoX for this section. No billing records, cost allocation tags, Cost Explorer exports, or equivalent data sources were present in the package. As a result:
-
-- Spend figures, cost breakdowns, and savings estimates **cannot be derived** from this appendix alone.
-- The entity reference above is suitable for use as a lookup table when reconciling account IDs with workload names, but it does not carry monetary values.
-
-**Recommended action (requires validation):** Confirm that Cost and Usage Report (CUR) or equivalent billing data is being exported and is accessible to CloudoX. Once cost data is ingested, this appendix will be populated with per-account and per-workload spend context to support the cost driver and optimization sections of this view.
+No provider-native cost evidence (e.g. billing exports, Cost Explorer data, or invoice line items) was available to CloudoX for this section. Cost figures, spend breakdowns, and savings estimates cited elsewhere in this view are derived from resource-level analysis rather than direct billing data. Finance teams should validate any cost totals against authoritative billing sources before acting on them.

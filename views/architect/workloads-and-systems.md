@@ -10,57 +10,49 @@
 
 ## Workloads & Systems
 
-The estate resolves to **3 systems** and **12 significant workloads** (3 further workloads were demoted as helper/governance artefacts), spread across 7 accounts and 807 resources — the majority in **eu-central-1**. Classification confidence is mixed: a large proportion of resources carry no Environment/Stage/Tier tags, so workload boundaries are inferred rather than declared. Architects should treat workload membership as a working model to validate, not a ground truth.
+The environment resolves into one cross-account system spanning two lifecycle stages (dev and prod), with a separate sandbox workload and a core platform workload. The most architecturally significant signal is that **761 resources carry no Environment / Stage / Tier tag**, meaning workload boundaries and tier assignments are inferred rather than declared — a classification debt that directly affects blast-radius analysis, cost attribution, and promotion-gate enforcement.
 
 ### Systems
 
-One system is explicitly identified from the evidence:
-
-| System | Confidence | Notes |
-|---|---|---|
-| **Cloudox Demo Atlas Dev** | Assumed | No account or region binding confirmed; inferred from workload grouping |
-
-Two further systems are implied by the prod/dev split of the Atlas workloads and the presence of a sandbox account, but the package does not surface them as named system entities. No evidence found for additional named systems beyond the above.
-
-> **Confidence note (Assumed):** The Cloudox Demo Atlas Dev system boundary is inferred. Its account and region attribution are not confirmed in the available evidence.
+One logical system is identifiable from the evidence: **Cloudox Demo Atlas Dev** (`Cloudox Demo Atlas Dev`). It is classified at the system level with *Assumed* confidence, meaning CloudoX inferred its boundary from resource naming and relationships rather than an explicit system-of-record tag or manifest. No additional system-level groupings are evidenced in this section's package.
 
 ### Workloads
 
-Six workloads are identified across three accounts, all anchored in **eu-central-1**:
+Five workloads are identified across three AWS accounts, all anchored in `eu-central-1`:
 
-| Workload | Account | Region | Confidence | Key Evidence |
-|---|---|---|---|---|
-| **Cloudox** | 122122642149 | eu-central-1 | Verified | — |
-| **Cloudox Demo Atlas Prod API** | 122122642149 | eu-central-1 | Likely | API GW endpoint `xdmn5ldmif.execute-api.eu-central-1.amazonaws.com`; DynamoDB table `cloudox-demo-atlas-prod-items` |
-| **Cloudox Demo Atlas Dev** | 105769365151 | eu-central-1 | Likely | DynamoDB table `cloudox-demo-atlas-dev-items` |
-| **Cloudox Demo Atlas Dev API** | 105769365151 | eu-central-1 | Likely | API GW endpoint `gfwaiva01f.execute-api.eu-central-1.amazonaws.com` |
-| **Cloudox Demo Sandbox Scratch** | 161388682021 | eu-central-1 | Assumed | DynamoDB table `cloudox-demo-sandbox-scratch` |
+| Friendly Name | Workload ID | Account | Confidence |
+|---|---|---|---|
+| Cloudox | `cloudox` | 122122642149 | Verified |
+| Cloudox Demo Atlas Prod API | `cloudox-demo-atlas-prod-api` | 122122642149 | Likely |
+| Cloudox Demo Atlas Dev | `cloudox-demo-atlas-dev` | 105769365151 | Likely |
+| Cloudox Demo Atlas Dev API | `cloudox-demo-atlas-dev-api` | 105769365151 | Likely |
+| Cloudox Demo Sandbox Scratch | `cloudox-demo-sandbox-scratch` | 161388682021 | Assumed |
 
-The **Cloudox** workload (account 122122642149) is the only Verified entity — it shares an account with the Atlas Prod API, suggesting a potential co-tenancy or platform dependency worth confirming. The sandbox workload (`cloudox-demo-sandbox-scratch`) is Assumed confidence; its scope and lifecycle are not established from the available evidence.
+**Cloudox** (`cloudox`, account `122122642149`) is the only Verified workload — it has the strongest evidence grounding and sits in the same account as the prod API, suggesting it is the platform or control-plane workload.
 
-Internet gateways are present across multiple accounts and regions (eu-central-1 and us-east-1), indicating that at least some workloads have or had internet-facing paths:
+**Atlas Dev** and **Atlas Dev API** (`cloudox-demo-atlas-dev`, `cloudox-demo-atlas-dev-api`) share account `105769365151` and are backed by the DynamoDB table `arn:aws:dynamodb:eu-central-1:105769365151:table/cloudox-demo-atlas-dev-items`. The dev API is internet-reachable via the API Gateway endpoint `https://gfwaiva01f.execute-api.eu-central-1.amazonaws.com`.
 
-| IGW | Account | Region |
-|---|---|---|
-| `igw-0d14f1dd4e54d5906` | 110019496666 | eu-central-1 |
-| `igw-00ed21b9a0e6596a8` | 110019496666 | us-east-1 |
-| `igw-0567575921f471548` | 105769365151 | us-east-1 |
-| `igw-0cff0d66b4fd90803` | 122980216815 | us-east-1 |
+**Atlas Prod API** (`cloudox-demo-atlas-prod-api`, account `122122642149`) is backed by `arn:aws:dynamodb:eu-central-1:122122642149:table/cloudox-demo-atlas-prod-items` and is internet-reachable via `https://xdmn5ldmif.execute-api.eu-central-1.amazonaws.com`.
 
-The us-east-1 IGWs appear in accounts not associated with the named workloads above. No evidence found for active workloads in us-east-1 — these may represent dormant VPC infrastructure or accounts outside the current workload inventory.
+**Cloudox Demo Sandbox Scratch** (`cloudox-demo-sandbox-scratch`, account `161388682021`) is classified with *Assumed* confidence. It holds a DynamoDB table (`arn:aws:dynamodb:eu-central-1:161388682021:table/cloudox-demo-sandbox-scratch`) and appears to be an unstructured experimentation space. Its relationship to the Atlas system is not evidenced.
+
+> **Confidence note:** Four of the five workloads are *Likely* or *Assumed*. Architects should treat workload boundaries as working hypotheses until tagging is remediated.
 
 ### Components & Tiers
 
-From the evidence, two component tiers are visible for the Atlas workloads:
+From the evidence available, the Atlas workloads follow a two-tier pattern visible in both dev and prod:
 
-- **API tier:** Amazon API Gateway public endpoints serve as the front door for both the dev API (`gfwaiva01f.execute-api.eu-central-1.amazonaws.com`) and the prod API (`xdmn5ldmif.execute-api.eu-central-1.amazonaws.com`). Both are internet-reachable (`internet` ingress path confirmed).
-- **Data tier:** Amazon DynamoDB tables back each environment — `cloudox-demo-atlas-dev-items` (account 105769365151), `cloudox-demo-atlas-prod-items` (account 122122642149), and `cloudox-demo-sandbox-scratch` (account 161388682021).
+- **API tier** — Amazon API Gateway (internet-facing, `execute-api.eu-central-1.amazonaws.com` endpoints) acting as the public entry point. Both dev (`https://gfwaiva01f.execute-api.eu-central-1.amazonaws.com`) and prod (`https://xdmn5ldmif.execute-api.eu-central-1.amazonaws.com`) endpoints are reachable from `internet`.
+- **Data tier** — Amazon DynamoDB tables serving as the persistence layer for each environment (`cloudox-demo-atlas-dev-items`, `cloudox-demo-atlas-prod-items`, `cloudox-demo-sandbox-scratch`).
 
-No evidence found for compute tiers (e.g., Lambda, ECS, EC2) within this section's package — the integration layer between API Gateway and DynamoDB is not confirmed here and should be treated as an unknown.
+No compute tier (Lambda, ECS, EC2) is evidenced within this section's package; those components, if present, are covered in other sections of this view.
 
-**Design observations for architects:**
-- Dev and prod workloads are isolated into separate AWS accounts, which is a sound boundary pattern, but the co-location of **Cloudox** and **Cloudox Demo Atlas Prod API** in the same account (122122642149) warrants a blast-radius review.
-- 761 of 807 resources lack Environment/Stage/Tier tags, making automated governance, cost allocation, and workload-boundary enforcement unreliable at scale. Tag remediation is a prerequisite for confident architecture analysis.
-- The us-east-1 IGWs in accounts with no identified workloads represent unaccounted network exposure that should be investigated.
+Internet gateways are present across multiple accounts and regions (`igw-00ed21b9a0e6596a8` and `igw-0d14f1dd4e54d5906` in account `110019496666` across `us-east-1` and `eu-central-1`; `igw-0567575921f471548` in account `105769365151` `us-east-1`; `igw-0cff0d66b4fd90803` in account `122980216815` `us-east-1`). The presence of IGWs in `us-east-1` alongside workloads declared in `eu-central-1` is a design question worth resolving — it may indicate multi-region expansion, legacy VPC scaffolding, or account-level defaults that have not been cleaned up.
+
+**Design issues to address:**
+1. **Tag coverage gap** — 761 resources lack Environment/Stage/Tier tags, making automated workload classification unreliable and complicating any future IaC drift or cost-allocation work.
+2. **Dev API is internet-exposed** — The dev API Gateway endpoint is publicly reachable. If this is not intentional, it represents an unnecessary attack surface.
+3. **Cross-region IGW presence** — Internet gateways in `us-east-1` for accounts whose declared workloads are in `eu-central-1` warrant review for residual or unmanaged infrastructure.
+4. **Sandbox isolation** — `cloudox-demo-sandbox-scratch` sits in a dedicated account (`161388682021`), which is a sound isolation pattern, but its *Assumed* confidence means its scope and ownership are not fully declared.
 
 ![Workload architecture](./diagrams/architect-workload-architecture.png)

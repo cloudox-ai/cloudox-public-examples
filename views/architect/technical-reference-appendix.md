@@ -10,7 +10,7 @@
 
 ## Technical Reference Appendix
 
-This appendix provides a stable friendly-name → raw-identifier mapping for all key entities referenced across this view. Use it to correlate prose references with console lookups, IaC state, or API queries.
+This appendix provides a stable friendly-name → raw-identifier mapping for every key entity referenced across this view. Use it to correlate prose references with console lookups, IaC state, or API calls.
 
 ### Entity Reference
 
@@ -24,7 +24,7 @@ This appendix provides a stable friendly-name → raw-identifier mapping for all
 | Workload Prod Account | `122122642149` | Verified |
 | Log Archive Account | `122980216815` | Likely |
 
-> **Note — Log Archive Account (`122980216815`):** Confidence is **Likely**, not Verified. Treat its role and membership in the AWS Organization as unconfirmed until directly validated in the management console or via AWS Organizations API.
+> **Note — Log Archive Account (`122980216815`):** Confidence is *Likely*, not Verified. Treat its role and membership in the organization as provisionally confirmed until corroborated by a direct account inventory or AWS Organizations API response.
 
 #### Security Groups
 
@@ -35,16 +35,16 @@ This appendix provides a stable friendly-name → raw-identifier mapping for all
 
 #### Subnets
 
-| Subnet ID | Account | Region | Confidence |
-|---|---|---|---|
-| `subnet-016c22941a019a137` | Workload Prod Account (`122122642149`) | eu-central-1 | Verified |
-| `subnet-013a24d318ed6f3d0` | Workload Prod Account (`122122642149`) | eu-central-1 | Verified |
-| `subnet-0f64d71c952a7898a` | Workload Dev Account (`105769365151`) | eu-central-1 | Verified |
-| `subnet-065f522206524ab12` | Workload Dev Account (`105769365151`) | eu-central-1 | Verified |
-| `subnet-029e2cceb3d0beff7` | Sandbox Ma Account (`161388682021`) | eu-central-1 | Verified |
+| Friendly Name | Subnet ID | Account | Region | Confidence |
+|---|---|---|---|---|
+| Public Subnet (eu-central-1) | `subnet-016c22941a019a137` | Workload Prod Account (`122122642149`) | eu-central-1 | Verified |
+| Public Subnet (eu-central-1) | `subnet-0f64d71c952a7898a` | Workload Dev Account (`105769365151`) | eu-central-1 | Verified |
+| Public Subnet (eu-central-1) | `subnet-065f522206524ab12` | Workload Dev Account (`105769365151`) | eu-central-1 | Verified |
+| Public Subnet (eu-central-1) | `subnet-013a24d318ed6f3d0` | Workload Prod Account (`122122642149`) | eu-central-1 | Verified |
+| Public Subnet (eu-central-1) | `subnet-029e2cceb3d0beff7` | Sandbox Ma Account (`161388682021`) | eu-central-1 | Verified |
 
-All five subnets carry the friendly name **Public Subnet (eu-central-1)**; use the raw subnet ID to distinguish them in routing tables, security group rules, and IaC references.
+> **Naming note:** Multiple subnets share the display name "Public Subnet (eu-central-1)" across different accounts. Always use the raw subnet ID (`subnet-0…`) to disambiguate in IaC, CDK, or Terraform references.
 
 ### Evidence
 
-No evidence references are available in this section's context package. Identifier mappings above are sourced directly from CloudoX discovery metadata.
+No citeable evidence references are available for this section. The entity records above are drawn from the discovered inventory included in this view's context package. For deeper provenance — such as the specific AWS Config snapshots, CloudTrail events, or API calls that produced each record — refer to the raw discovery run data or request an evidence export from CloudoX.

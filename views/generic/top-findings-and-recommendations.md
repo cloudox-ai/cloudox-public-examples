@@ -10,60 +10,36 @@
 
 ## Top Findings & Recommendations
 
-The environment spans **807 resources across 7 accounts**, with the most actionable finding being a resilience gap on a production database. Security posture carries two internet-exposed security groups and a large IAM role surface worth monitoring. Spend analysis is unavailable for this run, so cost findings are limited to architectural observations.
+The most actionable finding across this environment is a resilience gap in the production database tier. One architectural concern has been identified; spend-based findings are unavailable because Cost Explorer collection is disabled for this run.
 
-> **Confidence: Likely** — Derived from graph evidence; some unknowns remain (see below).
+> **Confidence: Likely** — findings are derived from discovered architecture; some resource attributes and cost signals are not available.
 
 ### Top Findings
 
-#### Resilience: Single-AZ Production Database
+#### Single-AZ Datastore: `cloudox-demo-atlas-prod-pg`
 
-The RDS instance **`cloudox-demo-atlas-prod-pg`** is deployed in a single Availability Zone. A zone-level failure would cause downtime and potential data loss for whatever workload depends on this database. This is the highest-priority architectural finding in the current dataset.
+The RDS DB instance **cloudox-demo-atlas-prod-pg** is deployed without a Multi-AZ standby. In the event of an Availability Zone failure, this instance would be unavailable until AWS completes a recovery to a new zone — a process that is neither instant nor guaranteed to meet tight RTO/RPO targets. This is classified as a **modernization opportunity** (priority 4) with a verified confidence level.
 
-- **Affected resource:** `cloudox-demo-atlas-prod-pg`
-- **Impact:** Reduced availability and recovery posture
-- **Finding ID:** `modernization_opportunity:architecture:cloudox-demo-atlas-prod-pg`
+**Impact:** Reduced availability and recovery posture. A zone failure could cause downtime or data loss for any workload depending on this database.
 
-#### Security: Internet-Exposed Security Groups
+---
 
-Two security groups are open to the internet:
+The following known gaps limit the completeness of this findings set:
 
-| Security Group | Account |
+| Gap | Effect on findings |
 |---|---|
-| `sg-0459201826f8de5b3` | 122122642149 |
-| `sg-06f2b4190bf01d261` | 122122642149 |
-
-The resources protected (or exposed) by these groups, and whether the inbound rules are intentional, are not detailed in the available evidence. They warrant review.
-
-A third security group (`sg-054446d655de1ee7f`, account 161388682021) is present in the evidence set but its internet-exposure status is not confirmed from the available data.
-
-#### IAM: Large Role Surface, No Customer-Managed Policies
-
-The environment contains **72 IAM roles** and **0 customer-managed policies**. Notable roles include:
-
-- `cloudox-demo-sandbox-unused-admin` (account 161388682021) — the name suggests an administrative role that may no longer be in active use.
-- `OrganizationAccountAccessRole` (account 161388682021) — a standard cross-account access role; its scope of use is not confirmed.
-- `cloudox-demo-sandbox-scratch-lambda` (account 161388682021) — a Lambda execution role in what appears to be a sandbox account.
-- `cloudox-demo-org-trail-logs` and `AWSServiceRoleForCloudFormationStackSetsOrgAdmin` (account 110319895932) — supporting org-level CloudTrail and StackSets respectively.
-
-The absence of customer-managed policies means permissions are likely defined inline or via AWS-managed policies, which can make least-privilege auditing harder.
-
-#### Observability: No Security Hub Evidence
-
-No Security Hub enablement was discovered. Without it, findings from GuardDuty, Inspector, and Config are not aggregated into a single security posture view.
-
-#### Tagging: Majority of Resources Untagged
-
-**761 of 807 resources** (≈94%) have no `Environment`, `Stage`, or `Tier` tag. CloudoX has inferred classification for these resources, but the lack of authoritative tags limits cost allocation, access control by tag, and operational filtering.
+| Cost Explorer collection disabled | No spend-based findings; cost driver analysis is architectural only |
+| No Security Hub enablement discovered | Managed security findings (GuardDuty, Inspector, etc.) are not surfaced |
+| CloudWatch utilization metrics not collected | Idle/underutilized resource recommendations are not available |
+| 761 resources lack Environment/Stage/Tier tags | Classification relies on inference; some findings may be mis-scoped |
+| RDS read replicas, provisioned IOPS, DynamoDB capacity mode, Direct Connect, S3 storage classes not captured | Cost drivers for these services are not detected |
 
 ### Recommended Actions
 
-| Priority | Domain | Action | Affected Resource / Scope |
-|---|---|---|---|
-| 1 | Architecture | Evaluate enabling Multi-AZ on `cloudox-demo-atlas-prod-pg` to eliminate single-point-of-failure risk. | `cloudox-demo-atlas-prod-pg` |
-| 2 | Security | Review `sg-0459201826f8de5b3` and `sg-06f2b4190bf01d261` — confirm whether internet-open inbound rules are intentional and scope them to known CIDRs or prefixes if not. | Account 122122642149 |
-| 3 | Security | Audit `cloudox-demo-sandbox-unused-admin` — if the role is no longer needed, remove it to reduce standing privilege. | Account 161388682021 |
-| 4 | Security | Evaluate enabling AWS Security Hub across accounts to centralise security findings. | Org-wide |
-| 5 | Operations | Implement consistent `Environment` / `Stage` / `Tier` tagging across all 807 resources to enable reliable cost allocation and operational filtering. | All accounts |
+1. **Enable Multi-AZ for `cloudox-demo-atlas-prod-pg`** — Evaluate enabling a Multi-AZ standby replica for this DB instance. This is the single verified architectural action identified in this run. The decision does not require immediate escalation (no immediate decision flag), but should be reviewed against the workload's availability requirements before the next maintenance window.
 
-> **Cost note:** Cost Explorer collection is disabled for this run (`CLOUDOX_COST__ENABLED=false`). Spend figures and dollar-attributed recommendations are unavailable. The findings above are derived from discovered architecture only.
+2. **Enable Cost Explorer collection** — Re-run discovery with cost collection enabled to surface spend-based findings, idle resource candidates, and right-sizing opportunities. The current analysis cannot quantify financial impact.
+
+3. **Investigate Security Hub enablement** — No Security Hub activation was discovered. Enabling it (along with GuardDuty and AWS Config) would provide a managed findings layer that CloudoX can incorporate in future runs.
+
+4. **Apply resource tagging** — 761 resources are untagged for Environment/Stage/Tier. Consistent tagging improves finding accuracy, cost allocation, and blast-radius scoping.

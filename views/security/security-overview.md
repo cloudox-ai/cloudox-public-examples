@@ -10,9 +10,9 @@
 
 ## Security Overview
 
-> **Confidence: Likely** — Evidence is derived from graph discovery; some unknowns and collector limitations remain. Treat findings as a strong working picture, not a complete audit.
+> **Confidence: Likely** — Derived from graph evidence across discovered resources; some unknowns and collector limitations remain. See gaps noted below before treating this as a complete picture.
 
-The most decision-relevant signal for this assessment: **two security groups are confirmed open to the internet**, an unused administrative role exists in the Sandbox account, and **Security Hub enablement could not be confirmed** — meaning there is no verified centralised findings aggregator in scope. These three facts together represent the highest-priority items for Security & Governance review.
+The most decision-relevant signal for this assessment: **three security groups are confirmed open to the internet**, an unused administrative role exists in the Sandbox account, and **no Security Hub enablement was discovered** — meaning there is no centralised, AWS-native findings aggregator confirmed to be active across this organisation. These three facts together represent the highest-priority governance concerns surfaced by this view.
 
 ---
 
@@ -20,63 +20,74 @@ The most decision-relevant signal for this assessment: **two security groups are
 
 #### Network Exposure
 
-Two security groups with internet-facing rules were identified across the Workload Prod Account (`122122642149`):
+Three security groups with internet-facing rules were identified across two accounts:
 
 | Security Group | Account | Account Friendly Name |
 |---|---|---|
 | `sg-0459201826f8de5b3` | `122122642149` | Workload Prod Account |
 | `sg-06f2b4190bf01d261` | `122122642149` | Workload Prod Account |
+| `sg-054446d655de1ee7f` | `161388682021` | Sandbox Ma Account |
 
-A third security group (`sg-054446d655de1ee7f`) is present in the Sandbox Ma Account (`161388682021`). Its internet-exposure status is not separately confirmed in this package beyond its presence as a citeable evidence reference.
-
-**What is exposed, and to whom?** Two production security groups have rules permitting inbound access from the internet. The specific ports, protocols, and attached resources are not detailed in this package and should be validated directly.
+Two of the three internet-open security groups reside in the **Production environment** (`122122642149-production`). The third is in the **Sandbox environment** (`161388682021-sandbox`). Security & Governance teams should validate the business justification for each open rule, confirm that any exposed ports are intentional, and verify that compensating controls (e.g. WAF, NACLs, host-based firewalling) are in place for the production instances.
 
 #### Identity & Access
 
-72 IAM roles are in scope. **0 customer-managed IAM policies** were discovered — all policy attachment is via AWS-managed or inline policies, which limits the ability to audit least-privilege centrally.
+**72 IAM roles** were captured across the assessed accounts. No customer-managed IAM policies were discovered — all policy attachment appears to be via AWS-managed or inline policies, which limits the ability to audit custom permission boundaries centrally.
 
-Roles of specific concern identified in evidence:
+The following roles warrant specific attention:
 
 | Role | Account | Risk Signal |
 |---|---|---|
-| `cloudox-demo-sandbox-unused-admin` (`arn:aws:iam::161388682021:role/cloudox-demo-sandbox-unused-admin`) | Sandbox Ma Account (`161388682021`) | Name indicates unused administrative privilege |
-| `OrganizationAccountAccessRole` (`arn:aws:iam::161388682021:role/OrganizationAccountAccessRole`) | Sandbox Ma Account (`161388682021`) | Standard cross-account break-glass role; access path should be reviewed |
-| `cloudox-demo-sandbox-scratch-lambda` (`arn:aws:iam::161388682021:role/cloudox-demo-sandbox-scratch-lambda`) | Sandbox Ma Account (`161388682021`) | Scratch/experimental role; scope of permissions not confirmed |
-| `stacksets-exec-899a82a2cb437e970934262f85c7628a` (`arn:aws:iam::161388682021:role/stacksets-exec-899a82a2cb437e970934262f85c7628a`) | Sandbox Ma Account (`161388682021`) | StackSets execution role; lateral movement path if over-permissioned |
-| `cloudox-demo-org-trail-logs` (`arn:aws:iam::110319895932:role/cloudox-demo-org-trail-logs`) | Management Account (`110319895932`) | Trail log delivery role; integrity depends on its policy scope |
-| `AWSServiceRoleForCloudFormationStackSetsOrgAdmin` (`arn:aws:iam::110319895932:role/aws-service-role/stacksets.cloudformation.amazonaws.com/AWSServiceRoleForCloudFormationStackSetsOrgAdmin`) | Management Account (`110319895932`) | Org-wide StackSets admin; high blast radius if misused |
+| `cloudox-demo-sandbox-unused-admin` (`arn:aws:iam::161388682021:role/cloudox-demo-sandbox-unused-admin`) | Sandbox Ma Account (`161388682021`) | Name indicates an unused administrative role — high-privilege, potentially dormant |
+| `OrganizationAccountAccessRole` (`arn:aws:iam::161388682021:role/OrganizationAccountAccessRole`) | Sandbox Ma Account (`161388682021`) | Standard AWS cross-account break-glass role; confirm trust policy restricts assumption to the Management Account only |
+| `cloudox-demo-org-trail-logs` (`arn:aws:iam::110319895932:role/cloudox-demo-org-trail-logs`) | Management Account (`110319895932`) | Supports the org-level CloudTrail; confirm least-privilege and no unintended trust relationships |
+| `AWSServiceRoleForCloudFormationStackSetsOrgAdmin` (`arn:aws:iam::110319895932:role/aws-service-role/stacksets.cloudformation.amazonaws.com/AWSServiceRoleForCloudFormationStackSetsOrgAdmin`) | Management Account (`110319895932`) | AWS service-linked role for StackSets org administration; verify StackSets usage is intentional and scoped |
+| `cloudox-demo-sandbox-scratch-lambda` (`arn:aws:iam::161388682021:role/cloudox-demo-sandbox-scratch-lambda`) | Sandbox Ma Account (`161388682021`) | "Scratch" naming suggests an ad-hoc or temporary role; confirm it is still required and appropriately scoped |
+| `stacksets-exec-899a82a2cb437e970934262f85c7628a` (`arn:aws:iam::161388682021:role/stacksets-exec-899a82a2cb437e970934262f85c7628a`) | Sandbox Ma Account (`161388682021`) | StackSets execution role in a member account; confirm it is scoped to expected StackSets operations only |
 
-**Where is identity over-privileged or unclear?** The `cloudox-demo-sandbox-unused-admin` role is the clearest signal — its name explicitly suggests administrative privilege that is not actively used, which is a remediation candidate. The `OrganizationAccountAccessRole` in the Sandbox account provides a cross-account access path from the Management Account and warrants confirmation that its trust policy is appropriately restricted. The absence of customer-managed policies means least-privilege posture cannot be assessed from policy documents alone.
+**Priority action:** The `cloudox-demo-sandbox-unused-admin` role should be reviewed immediately. If it is genuinely unused, it represents an unnecessary standing privilege that should be removed or at minimum have its trust policy tightened.
 
-#### Audit Trail
+#### Audit & Logging
 
-An organisation-level CloudTrail trail (`cloudox-demo-org-trail-o-aaaapzvebq`, `arn:aws:cloudtrail:eu-central-1:110319895932:trail/cloudox-demo-org-trail-o-aaaapzvebq`) is present in the Management Account (`110319895932`) in `eu-central-1`. This is a positive governance signal — org-level trails cover member accounts. Whether log integrity validation, log file validation, or CloudWatch Logs integration is enabled is **not confirmed** in this package.
+An organisation-level CloudTrail trail (`cloudox-demo-org-trail-o-aaaapzvebq`, `arn:aws:cloudtrail:eu-central-1:110319895932:trail/cloudox-demo-org-trail-o-aaaapzvebq`) is present in the Management Account (`110319895932`), operating from `eu-central-1`. This is a positive governance signal — a single org trail provides consistent API activity logging across member accounts. The associated log-delivery role (`cloudox-demo-org-trail-logs`) should be validated to confirm logs are being delivered to the Log Archive Account (`122980216815`) and that the destination bucket is protected against deletion or modification.
 
-#### Centralised Security Findings
-
-**No Security Hub enablement was discovered.** This is a material governance gap: without a confirmed aggregator, there is no verified single pane for findings across the organisation's accounts. This should be validated as a priority — it is possible Security Hub is enabled but was not reachable by the collector.
+**No Security Hub enablement was discovered.** This is a material gap: without Security Hub, there is no confirmed centralised aggregation of findings from GuardDuty, Config, Inspector, or Macie across the organisation. This should be validated — it is possible Security Hub is enabled but was not reachable by the collector (see gaps below).
 
 ---
 
 ### Scope of Assessment
 
-**807 resources** were captured across the following accounts:
+#### Accounts in Scope
 
-| Account | Friendly Name | Confidence | Environment |
-|---|---|---|---|
-| `110319895932` | Management Account | Verified | — |
-| `161388682021` | Sandbox Ma Account | Verified | Sandbox |
-| `105769365151` | Workload Dev Account | Verified | Development |
-| `122122642149` | Workload Prod Account | Verified | Production |
-| `122980216815` | Log Archive Account | Likely | Unknown |
-| `110019496666` | Audit Account | Likely | — |
-| `150982215529` | Platform Account | Likely | Production |
+The following accounts were identified within the assessed organisation. Confidence varies by account:
 
-The Log Archive Account (`122980216815`), Audit Account (`110019496666`), and Platform Account (`150982215529`) are identified with **Likely** confidence — their roles are inferred, not directly confirmed from account metadata in this package.
+| Account ID | Friendly Name | Confidence |
+|---|---|---|
+| `110319895932` | Management Account | Verified |
+| `161388682021` | Sandbox Ma Account | Verified |
+| `105769365151` | Workload Dev Account | Verified |
+| `122122642149` | Workload Prod Account | Verified |
+| `122980216815` | Log Archive Account | Likely |
+| `110019496666` | Audit Account | Likely |
+| `150982215529` | Platform Account | Likely |
 
-**0 coverage gaps** were identified within the typed collector coverage. However, two collector limitations constrain the completeness of this picture:
+Four accounts are **Verified** (directly observed evidence). Three accounts — Log Archive (`122980216815`), Audit (`110019496666`), and Platform (`150982215529`) — are assessed as **Likely**, meaning their presence is inferred but not fully confirmed by direct resource discovery. Governance teams should confirm that the Audit and Log Archive accounts have appropriate SCPs and access controls preventing modification by workload accounts.
 
-- **Resource Explorer meta-collector was disabled or unavailable** — the AWS-visible resource breadth could not be cross-checked against what was collected. Resources visible to AWS but outside typed collector coverage may be missing.
-- **Cloud Control meta-collector was disabled** — long-tail and newer resource types are limited to what typed collectors explicitly support. Novel or less-common resource types may not appear in the 807-resource count.
+#### Resource Coverage
 
-**What governance or evidence gaps exist?** The combination of no confirmed Security Hub, disabled Resource Explorer cross-check, and disabled Cloud Control meta-collector means the true attack surface breadth is not fully verified. The 807-resource figure should be treated as a lower bound. Enabling these collectors and confirming Security Hub status are the highest-priority evidence gaps to close.
+**807 resources** were captured across the assessed scope. No coverage gaps were identified within the typed collector coverage. However, two collector limitations constrain the completeness of this picture:
+
+- **Resource Explorer meta-collector was disabled or unavailable** — the AWS-visible breadth of resources could not be cross-checked against what CloudoX discovered. There may be resource types or regions not covered by typed collectors that are invisible to this assessment.
+- **Cloud Control meta-collector was disabled** — long-tail and newer AWS resource types are limited to what typed collectors explicitly support. Niche or recently-launched services may be absent.
+
+These limitations mean the 807-resource count should be treated as a **lower bound**, not a complete inventory. Security teams should independently verify coverage for any services known to be in use that are not reflected in other sections of this view.
+
+#### Known Governance Gaps
+
+| Gap | Implication |
+|---|---|
+| No Security Hub enablement discovered | No confirmed centralised findings aggregation; detective controls may be fragmented |
+| Resource Explorer meta-collector unavailable | Cannot cross-check full AWS resource breadth; unknown resource types may exist |
+| Cloud Control meta-collector disabled | Long-tail resource types not covered; newer AWS services may be unassessed |
+| No customer-managed IAM policies discovered | Custom permission boundaries cannot be centrally audited; all 72 roles rely on AWS-managed or inline policies |
+| Log Archive and Audit account confidence is Likely, not Verified | Full discovery of these accounts was not confirmed; their protective controls cannot be fully assessed from this data |

@@ -10,23 +10,24 @@
 
 ## Cost & Efficiency Signals
 
-> **Confidence: Likely** — Spend data is unavailable for this run. The signals below are derived from discovered architecture only; no dollar figures can be confirmed until Cost Explorer collection is enabled.
+> **Confidence: Likely** — Spend data is unavailable for this analysis run. All observations are derived from the discovered architecture; no dollar figures can be stated. Treat this section as directional until Cost Explorer data is enabled.
 
-The single most important action here is a data gap, not a cost finding: billing data collection is currently disabled, meaning leadership has no automated spend visibility through CloudoX. Until that is resolved, cost governance relies entirely on manual Cost Explorer access.
+The most important action here is an instrumentation gap: cost collection is currently disabled, meaning leadership has no automated spend visibility from this tooling. Enabling it should be treated as an immediate operational decision.
 
 ### Where the Money Goes
 
-No spend figures are available for any of the six accounts in scope — Management Account, Sandbox Ma Account, Workload Dev Account, Workload Prod Account, Log Archive Account, or Audit Account. Seven architectural cost drivers were identified from the discovered infrastructure, indicating active resource patterns that carry charges, but exact dollar attribution cannot be provided without billing data.
+Six accounts are in scope — **Management Account**, **Sandbox Ma Account**, **Workload Dev Account**, **Workload Prod Account**, **Log Archive Account**, and **Audit Account**. Charges will be distributed across these accounts, with the production and development workload accounts most likely representing the largest share of compute and data spend.
 
-No evidence found for a breakdown of spend by account, service, or region.
+Because Cost Explorer collection is disabled, no per-account, per-service, or per-region spend breakdown is available. The architecture confirms resources exist across these accounts that carry ongoing charges (compute, storage, networking, and logging infrastructure), but exact attribution cannot be stated from this run.
 
 ### Efficiency Opportunities
 
-No optimization candidates were surfaced in this run. This is a direct consequence of two collection gaps:
+Three structural gaps prevent efficiency analysis at this time:
 
-- **Billing data is off.** Cost Explorer collection is disabled, so spend-based anomalies and waste signals cannot be detected.
-- **Utilization metrics are not collected.** CloudoX does not collect CloudWatch utilization data in this version, so idle resources, underutilized instances, and right-sizing recommendations based on actual usage are not available.
+| Gap | Impact |
+|---|---|
+| Cost Explorer collection disabled | No spend data; no trend, anomaly, or waste detection |
+| CloudWatch utilization metrics not collected | Idle or underutilized resources cannot be identified; right-sizing is not possible |
+| Several service dimensions not captured (RDS replicas, provisioned IOPS, DynamoDB capacity mode, Direct Connect, S3 storage classes) | Cost drivers for these services are undetected even if resources exist |
 
-Additionally, several resource types — including RDS read replicas, RDS provisioned IOPS, DynamoDB capacity modes, Direct Connect, and S3 storage classes — are outside the current collector scope and will not appear as cost drivers even if present.
-
-**Decision needed:** Enable Cost Explorer collection to unlock spend visibility and efficiency analysis across all accounts. Until then, the seven detected architectural cost drivers represent the only available signal, and no savings estimates can be validated.
+**Decision needed:** Enable cost collection (`CLOUDOX_COST__ENABLED=true`) to unlock spend attribution, efficiency recommendations, and anomaly detection in subsequent runs. Until then, teams should rely directly on AWS Cost Explorer and Cost and Usage Reports for spend oversight.

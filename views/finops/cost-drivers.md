@@ -10,74 +10,51 @@
 
 ## Cost Drivers
 
-> **Confidence: Likely** — Spend data is unavailable for this run (Cost Explorer collection is disabled). All cost driver analysis is derived from discovered architecture only. Dollar attributions cannot be made here; use AWS Cost Explorer or CUR for exact figures.
+> **Confidence: Likely** — AWS Cost Explorer data collection is disabled for this run. All cost driver analysis is derived from discovered architecture. Dollar figures are not available; the patterns below describe resources and design choices known to carry charges. Validate against Cost Explorer or CUR before acting.
 
-The most important thing to know before reading this section: **no billing data was collected**. What follows describes the architectural patterns that are known to carry charges across 807 resources, 7 accounts, and multiple workloads — giving you a map of where to look in Cost Explorer, not a spend report.
+The environment spans **807 resources across 7 accounts**, with **4 significant workloads** and 1 platform system identified. The primary cost-bearing activity is concentrated in two workload accounts — **Workload Dev Account** (`105769365151`) and **Workload Prod Account** (`122122642149`) — both running in `eu-central-1`. A **Sandbox Ma Account** (`161388682021`), **Audit Account** (`110019496666`), **Log Archive Account** (`122980216815`), and **Platform Account** (`150982215529`) carry supporting infrastructure that also generates spend.
 
 ### Architectural Cost Drivers
 
-Seven architectural cost drivers were identified from the discovered environment. These are structural patterns — not line-item costs — that typically generate ongoing charges and warrant direct investigation in your billing data.
+Three architectural patterns stand out as the primary structural cost drivers:
 
-**API Gateway exposure (internet-facing endpoints)**
+**1. Multi-account, multi-environment API workloads**
 
-Two public API Gateway endpoints are active in `eu-central-1`:
-- `https://gfwaiva01f.execute-api.eu-central-1.amazonaws.com` — associated with the **Cloudox Demo Atlas Dev API** workload (Workload Dev Account `105769365151`)
-- `https://xdmn5ldmif.execute-api.eu-central-1.amazonaws.com` — associated with the **Cloudox Demo Atlas Prod API** workload (Workload Prod Account `122122642149`)
+Two parallel API workloads run in separate accounts — **Cloudox Demo Atlas Dev API** (`cloudox-demo-atlas-dev-api`) in the Workload Dev Account and **Cloudox Demo Atlas Prod API** (`cloudox-demo-atlas-prod-api`) in the Workload Prod Account, both in `eu-central-1`. Each workload has its own API Gateway endpoint (`https://gfwaiva01f.execute-api.eu-central-1.amazonaws.com` and `https://xdmn5ldmif.execute-api.eu-central-1.amazonaws.com`) exposed to the internet. Running full parallel stacks for dev and prod is an intentional isolation choice, but it means fixed and per-request costs are duplicated across both environments. This is the expected cost of environment parity — worth confirming that the dev environment is not over-provisioned relative to its actual usage.
 
-API Gateway charges accrue per API call and per GB of data transferred. Both endpoints are internet-facing, meaning external traffic volumes directly drive cost. Prod and Dev endpoints running in parallel means both are incurring baseline charges regardless of traffic levels.
+**2. Internet-facing infrastructure across multiple accounts and regions**
 
-**DynamoDB tables across three accounts**
+Four Internet Gateways are present across three accounts and two regions:
 
-Three DynamoDB tables are present across different account tiers:
-
-| Table | Account | Workload |
-|---|---|---|
-| `cloudox-demo-atlas-dev-items` | Workload Dev (`105769365151`) | Cloudox Demo Atlas Dev |
-| `cloudox-demo-atlas-prod-items` | Workload Prod (`122122642149`) | Cloudox Demo Atlas Prod API |
-| `cloudox-demo-sandbox-scratch` | Sandbox Ma (`161388682021`) | Cloudox Demo Sandbox Scratch |
-
-DynamoDB cost is driven by capacity mode (on-demand vs. provisioned), read/write request volumes, and storage. **The capacity mode for these tables is not captured by the current collectors** — this is a material unknown for cost estimation. The sandbox table (`cloudox-demo-sandbox-scratch`) is a candidate for validation: scratch/sandbox resources can accumulate cost without active use.
-
-**Internet Gateways across multiple accounts and regions**
-
-Four Internet Gateways are present across two regions and three accounts:
-
-| IGW | Account | Region |
+| Internet Gateway | Account | Region |
 |---|---|---|
 | `igw-00ed21b9a0e6596a8` | Audit Account (`110019496666`) | us-east-1 |
 | `igw-0d14f1dd4e54d5906` | Audit Account (`110019496666`) | eu-central-1 |
-| `igw-0567575921f471548` | Workload Dev (`105769365151`) | us-east-1 |
+| `igw-0567575921f471548` | Workload Dev Account (`105769365151`) | us-east-1 |
 | `igw-0cff0d66b4fd90803` | Log Archive Account (`122980216815`) | us-east-1 |
 
-Internet Gateways themselves carry no hourly charge, but they enable data transfer paths that do. The presence of IGWs in the Audit Account and Log Archive Account — and a Dev account IGW in `us-east-1` while the workload appears to operate in `eu-central-1` — are worth validating. Cross-region data transfer and unexpected egress from governance/logging accounts can be silent cost contributors.
+Internet Gateways themselves carry no hourly charge, but their presence indicates VPCs with public subnets, NAT Gateways, or data transfer paths that do. The presence of gateways in `us-east-1` for accounts whose workloads appear to be in `eu-central-1` (Workload Dev, Audit) is worth validating — unused or orphaned VPC infrastructure in a secondary region is a common source of quiet, ongoing spend. **Requires validation.**
 
-**Multi-account, multi-region footprint**
+**3. DynamoDB tables across three accounts**
 
-The environment spans 7 accounts (Management, Workload Dev, Workload Prod, Sandbox, Audit, Log Archive, Platform) and at least two regions (`eu-central-1` and `us-east-1`). This structure is architecturally sound for governance, but it means:
-- Per-account fixed costs (e.g., AWS Config, CloudTrail, GuardDuty) multiply across accounts
-- Cross-region data transfer charges apply wherever resources communicate across regions
-- Cost visibility requires consolidated billing and account-level tagging discipline
+Three DynamoDB tables are identified:
 
-**Tagging gap limits cost attribution**
+| Table | Account | Environment |
+|---|---|---|
+| `cloudox-demo-atlas-dev-items` (`arn:aws:dynamodb:eu-central-1:105769365151:table/cloudox-demo-atlas-dev-items`) | Workload Dev | Dev |
+| `cloudox-demo-atlas-prod-items` (`arn:aws:dynamodb:eu-central-1:122122642149:table/cloudox-demo-atlas-prod-items`) | Workload Prod | Prod |
+| `cloudox-demo-sandbox-scratch` (`arn:aws:dynamodb:eu-central-1:161388682021:table/cloudox-demo-sandbox-scratch`) | Sandbox Ma | Sandbox |
 
-761 of 807 resources (94%) have no Environment / Stage / Tier tag and rely on inference for classification. This is not a cost driver itself, but it severely limits the ability to attribute spend to workloads, environments, or teams in Cost Explorer. Any showback or chargeback model will have significant blind spots until tagging coverage improves.
+DynamoDB cost depends heavily on capacity mode (on-demand vs. provisioned) and actual read/write throughput — neither is captured in this run. The sandbox table (`cloudox-demo-sandbox-scratch`) in the **Cloudox Demo Sandbox Scratch** workload (`cloudox-demo-sandbox-scratch`) is a candidate for review: sandbox resources left running at provisioned capacity can accumulate unnecessary spend. **Requires validation.**
 
 ### Service & Resource Drivers
 
-No spend data is available to rank services by cost. The following service-level observations are derived from architecture discovery alone.
+**API Gateway** is a direct cost driver for both the dev and prod workloads, with charges accruing per API call and per GB of data transfer out to the internet. Both endpoints are publicly accessible (`internet`-facing), meaning all external traffic contributes to data transfer costs.
 
-**Services with known per-request or per-unit cost models present in this environment:**
-- **Amazon API Gateway** — two internet-facing endpoints (dev + prod); charges per million API calls and per GB data out
-- **Amazon DynamoDB** — three tables across dev, prod, and sandbox; charges depend on capacity mode (unknown) and request volume
-- **Data transfer** — four Internet Gateways across two regions create potential egress paths; cross-region transfer between `us-east-1` and `eu-central-1` resources would carry inter-region charges
+**DynamoDB** drives cost through storage, read/write capacity units, and (if enabled) features such as point-in-time recovery or global tables. Without capacity mode data, it is not possible to determine whether the tables are optimally configured — this is a gap to close in Cost Explorer or via a targeted collector run.
 
-**Optimization candidates requiring validation:**
+**VPC / Networking** costs (NAT Gateway hours and data processing, inter-AZ transfer, data transfer out) are structurally implied by the four Internet Gateways and the multi-account, multi-region VPC footprint. These charges are often underestimated and can be material, particularly if the `us-east-1` gateways in the Audit and Log Archive accounts are associated with active NAT Gateways. **Requires validation.**
 
-| Candidate | Rationale | Action Required |
-|---|---|---|
-| `cloudox-demo-sandbox-scratch` DynamoDB table (Sandbox `161388682021`) | Sandbox/scratch resource; may be idle or low-use | Validate activity in CloudWatch; confirm if still needed |
-| IGW `igw-0567575921f471548` in `us-east-1` (Workload Dev `105769365151`) | Dev workload appears to be `eu-central-1`-primary; `us-east-1` IGW may be unused | Confirm whether any resources route through this IGW; check for associated NAT or data transfer charges |
-| IGW `igw-0d14f1dd4e54d5906` and `igw-00ed21b9a0e6596a8` in Audit Account (`110019496666`) | Governance accounts with internet gateways are unusual; egress from audit/log infrastructure can be unexpected | Validate whether these IGWs carry active traffic; review data transfer costs for this account |
-| Dev API endpoint running in parallel with Prod | Parallel API Gateway stages incur independent call and data transfer charges | Confirm Dev endpoint traffic levels; assess whether Dev can be throttled or decommissioned between active development cycles |
+**Supporting account infrastructure** — the Management Account (`110319895932`), Audit Account (`110019496666`), Log Archive Account (`122980216815`), and Platform Account (`150982215529`) — carries baseline spend for AWS Control Tower / Organizations, CloudTrail, Config, and log storage. This is expected for a well-governed multi-account structure, but the volume of log storage and Config rule evaluations should be reviewed periodically.
 
-> **Note:** CloudWatch utilization metrics are not collected in this version. Idle or underutilized resource identification (e.g., right-sizing, unused capacity) requires separate analysis using CloudWatch or AWS Compute Optimizer.
+> **Key gaps for FinOps action:** Enable Cost Explorer collection (`CLOUDOX_COST__ENABLED=true`) to attach dollar figures to these architectural patterns. Priority validation targets are: (1) the purpose and activity of `us-east-1` VPC infrastructure in the Audit and Log Archive accounts, (2) DynamoDB capacity mode and utilization for all three tables, and (3) whether the dev API workload is sized proportionally to actual load.

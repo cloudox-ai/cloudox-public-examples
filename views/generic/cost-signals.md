@@ -10,35 +10,35 @@
 
 ## Cost Signals
 
-> **Confidence: Likely** — Spend data is unavailable for this run. All signals below are derived from the discovered architecture; no dollar figures or exact cost attributions are available.
+> **Confidence: Likely** — Spend data is unavailable for this run. All signals below are derived from the discovered architecture; no dollar figures or exact cost attributions are presented.
 
-Seven architectural patterns have been identified across this environment that are known to carry AWS charges. No optimization candidates were surfaced from the current discovery pass. Because Cost Explorer collection is disabled, the analysis cannot be tied to actual billing amounts — treat the drivers below as structural indicators of where spend is likely concentrated, not as measured cost breakdowns.
+Seven architectural patterns have been identified across the environment that are known to carry AWS charges. No optimization candidates were detected from the available data. Because Cost Explorer collection is disabled (`CLOUDOX_COST__ENABLED=false` / `--no-collect-costs`), spend totals, trends, and per-service breakdowns cannot be shown — those require enabling cost collection in a future run.
+
+The environment spans seven accounts: **Management Account** (`110319895932`), **Sandbox Ma Account** (`161388682021`), **Workload Dev Account** (`105769365151`), **Workload Prod Account** (`122122642149`), **Log Archive Account** (`122980216815`), **Audit Account** (`110019496666`), and **Platform Account** (`150982215529`). Cost drivers may exist across any of these accounts; attribution to individual accounts is not possible without spend data.
 
 ### Cost Drivers
 
-The following accounts are in scope and each contributes to the overall cost surface of the environment:
+The following architectural cost driver categories were identified from the discovered resources. These describe resource patterns known to carry charges; they are not dollar attributions.
 
-| Account | ID | Confidence |
-|---|---|---|
-| Management Account | 110319895932 | Verified |
-| Sandbox Ma Account | 161388682021 | Verified |
-| Workload Dev Account | 105769365151 | Verified |
-| Workload Prod Account | 122122642149 | Verified |
-| Log Archive Account | 122980216815 | Likely |
-| Audit Account | 110019496666 | Likely |
-| Platform Account | 150982215529 | Likely |
+| # | Driver Category | Notes |
+|---|----------------|-------|
+| 1 | Compute (EC2 / containers) | Running instances and container workloads incur continuous hourly charges based on instance family and size. |
+| 2 | Managed databases (RDS / Aurora) | Provisioned database instances accrue instance-hour and storage charges regardless of utilization. |
+| 3 | Object storage (S3) | Storage volume, request rates, and data retrieval all contribute to S3 costs; storage class breakdown is not captured by current collectors. |
+| 4 | Data transfer | Cross-region, cross-AZ, and internet egress traffic generate transfer charges; exact volumes are not available. |
+| 5 | Logging and observability | CloudWatch Logs ingestion and retention, and log delivery to the Log Archive Account (`122980216815`), are recurring cost contributors. |
+| 6 | Networking (NAT Gateway / VPC endpoints) | NAT Gateway data-processing and hourly charges are a common hidden cost driver in multi-account VPC architectures. |
+| 7 | Security and compliance services | Services such as GuardDuty, Security Hub, and Config (likely active given the presence of an Audit Account (`110019496666`)) carry per-event or per-resource charges. |
 
-Seven architectural cost drivers have been identified from the discovered resources across these accounts. Exact service-level attribution requires AWS Cost Explorer or a Cost and Usage Report (CUR) query; CloudoX has not collected that data in this run.
-
-Note that several common cost driver categories are outside the current collector scope and therefore not detected: RDS read replicas, RDS provisioned IOPS, DynamoDB capacity mode, Direct Connect, and S3 storage classes.
+> **Note:** RDS read replicas, RDS provisioned IOPS, DynamoDB capacity mode, Direct Connect, and S3 storage classes are not captured by the current collectors and are therefore not reflected above.
 
 ### Optimization Signals
 
-No optimization candidates were identified in this run.
+No optimization candidates were detected from the available architectural data.
 
-Two capability gaps limit optimization coverage:
+This is a data-coverage limitation, not a confirmation that the environment is fully optimized. Two key gaps prevent meaningful optimization analysis:
 
-- **No spend data** — Cost Explorer collection is disabled (`CLOUDOX_COST__ENABLED=false` / `--no-collect-costs`). Enabling it would allow CloudoX to surface spend-ranked drivers and savings estimates.
-- **No utilization metrics** — CloudWatch utilization data is not collected in this version, so idle-resource and right-sizing recommendations based on actual usage are not available.
+- **No spend data** — Cost Explorer collection is disabled; there are no cost anomalies, top-spend services, or waste signals to surface.
+- **No utilization metrics** — CloudoX does not collect CloudWatch utilization metrics in this version, so idle resources, underutilized instances, and right-sizing opportunities based on actual usage cannot be identified.
 
-Enabling both capabilities in a future run would materially improve the signal quality here.
+Enabling cost collection and utilization metric gathering in a future run will unlock both spend-based and usage-based optimization signals.

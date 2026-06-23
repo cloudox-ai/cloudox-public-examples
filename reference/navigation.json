@@ -1,0 +1,119 @@
+{
+  "content_hash": "7433b50ef14d5ffaa4a1862accd8b20751d45154a75b549ee34222a0f6701bb1",
+  "errors": {},
+  "generated_at": "2026-06-23T09:14:21.444503+00:00",
+  "index_relpath": "reference/README.md",
+  "kind": "reference-navigation",
+  "provider": "aws",
+  "schema_version": 1,
+  "tables": [
+    {
+      "anchor": "network-routing-reference",
+      "category": "network",
+      "displayed_row_count": 39,
+      "empty": false,
+      "key": "network-routing",
+      "order": 0,
+      "path": "reference/network-routing.md",
+      "row_count": 39,
+      "title": "Network Routing Reference",
+      "truncated": false
+    },
+    {
+      "anchor": "connectivity-reference",
+      "category": "network",
+      "displayed_row_count": 1,
+      "empty": false,
+      "key": "connectivity",
+      "order": 1,
+      "path": "reference/connectivity.md",
+      "row_count": 1,
+      "title": "Connectivity Reference",
+      "truncated": false
+    },
+    {
+      "anchor": "security-flow-reference-ingress-only",
+      "category": "security",
+      "displayed_row_count": 24,
+      "empty": false,
+      "key": "security-flows",
+      "order": 2,
+      "path": "reference/security-flows.md",
+      "row_count": 24,
+      "title": "Security Flow Reference (Ingress Only)",
+      "truncated": false
+    },
+    {
+      "anchor": "public-exposure-reference",
+      "category": "security",
+      "displayed_row_count": 9,
+      "empty": false,
+      "key": "public-exposure",
+      "order": 3,
+      "path": "reference/public-exposure.md",
+      "row_count": 9,
+      "title": "Public Exposure Reference",
+      "truncated": false
+    },
+    {
+      "anchor": "service-dependency-reference",
+      "category": "data",
+      "displayed_row_count": 10,
+      "empty": false,
+      "key": "service-dependencies",
+      "order": 4,
+      "path": "reference/service-dependencies.md",
+      "row_count": 10,
+      "title": "Service Dependency Reference",
+      "truncated": false
+    },
+    {
+      "anchor": "identity-and-trust-reference",
+      "category": "identity",
+      "displayed_row_count": 8,
+      "empty": false,
+      "key": "identity-trust",
+      "order": 5,
+      "path": "reference/identity-trust.md",
+      "row_count": 8,
+      "title": "Identity and Trust Reference",
+      "truncated": false
+    },
+    {
+      "anchor": "dns-zones-reference",
+      "category": "dns",
+      "displayed_row_count": 1,
+      "empty": false,
+      "key": "dns",
+      "order": 6,
+      "path": "reference/dns.md",
+      "row_count": 1,
+      "title": "DNS Zones Reference",
+      "truncated": false
+    },
+    {
+      "anchor": "encryption-reference",
+      "category": "security",
+      "displayed_row_count": 14,
+      "empty": false,
+      "key": "encryption",
+      "order": 7,
+      "path": "reference/encryption.md",
+      "row_count": 14,
+      "title": "Encryption Reference",
+      "truncated": false
+    },
+    {
+      "anchor": "tagging-reference",
+      "category": "governance",
+      "displayed_row_count": 20,
+      "empty": false,
+      "key": "tagging",
+      "order": 8,
+      "path": "reference/tagging.md",
+      "row_count": 20,
+      "title": "Tagging Reference",
+      "truncated": false
+    }
+  ]
+}

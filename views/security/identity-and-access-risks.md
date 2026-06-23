@@ -10,67 +10,75 @@
 
 ## Identity & Access Risks
 
-**Section confidence: Likely** — derived from graph evidence; some unknowns and limitations remain. Treat Assumed-confidence findings as requiring manual validation before acting.
+**Confidence: Likely** — findings are derived from graph evidence; some unknowns and naming-based inferences remain. See assumptions and gaps below.
 
-The most pressing governance gap across this environment is the near-absence of automated identity and threat monitoring: both IAM Access Analyzer and GuardDuty are enabled in only 1 of 6 scanned accounts, leaving the Management Account, both Workload accounts, the Sandbox, and the Log Archive account operating without these detective controls. Alongside this, a broadly-named administrative IAM role in the Sandbox account warrants immediate review.
+The most pressing governance concern across this environment is the absence of consistent detective controls: both IAM Access Analyzer and GuardDuty are enabled in only **1 of 6 scanned accounts**, leaving the majority of the estate — including the Management Account and Workload Prod Account — without external-access analysis or threat detection. Alongside this, a broadly-named administrative IAM role in the Sandbox account warrants immediate privilege review.
+
+---
 
 ### Privilege & Trust
 
-The environment contains 72 IAM roles across the scanned accounts. No customer-managed IAM policies were discovered, which limits visibility into how permissions are composed and governed.
+Several IAM roles with elevated or broad trust scope are present across the environment.
 
-**OrganizationAccountAccessRole presence across member accounts**
+**`OrganizationAccountAccessRole` — cross-account administrative trust**
 
-The `OrganizationAccountAccessRole` — a high-trust role created by AWS Organizations that grants the Management Account (`110319895932`) full administrative access to member accounts — is present in at least four member accounts:
+Instances of `OrganizationAccountAccessRole` are present in four member accounts: Log Archive Account (`122980216815`, `AROAAAAAB33DHRZ72LLFE`), Audit Account (`110019496666`, `AROAAAAACLQX0PDP245PQ`), Workload Dev Account (`105769365151`, `AROAAAAAC6A0RHGHCRIWC`), and Workload Prod Account (`122122642149`, `AROAAAAADGV42TTJ3H83B`). This role is the standard AWS Organizations cross-account access mechanism and typically grants full administrative access from the Management Account (`110319895932`). Its presence in production and log-archive accounts means the Management Account is a high-value lateral-movement target — compromise of the Management Account implies administrative access to all four.
 
-| Account | Friendly Name | Role ID |
-|---|---|---|
-| `122980216815` | Log Archive Account | `AROAAAAAB33DHRZ72LLFE` |
-| `110019496666` | Audit Account | `AROAAAAACLQX0PDP245PQ` |
-| `105769365151` | Workload Dev Account | `AROAAAAAC6A0RHGHCRIWC` |
-| `122122642149` | Workload Prod Account | `AROAAAAADGV42TTJ3H83B` |
+Evidence: `arn:aws:iam::161388682021:role/OrganizationAccountAccessRole`
 
-This is standard AWS Organizations behaviour, but it means any principal in the Management Account that can assume this role has unrestricted access to those member accounts. Governance teams should confirm that access to the Management Account itself is tightly controlled and that use of `OrganizationAccountAccessRole` is logged and reviewed.
+**`cloudox-demo-sandbox-unused-admin` — broadly-privileged role, Sandbox account**
 
-**Broadly-privileged IAM role in Sandbox — confidence: Assumed ⚠️**
+> **Confidence: Assumed** — privilege breadth is inferred from naming only; attached policies have not been collected.
 
-IAM role `cloudox-demo-sandbox-unused-admin` (`AROAAAAADPCL3BVEXUDTH`) in the Sandbox Ma Account (`161388682021`) carries a name strongly suggesting broad or administrative privilege. The actual attached policies were not collected, so the privilege breadth is inferred from naming alone and **must be validated** before drawing conclusions. If the role does carry admin-level permissions, the blast radius in the Sandbox account could be significant — particularly if the role is assumable from outside the account or has been unused (as the name implies).
+The IAM role `cloudox-demo-sandbox-unused-admin` (`AROAAAAADPCL3BVEXUDTH`) in the Sandbox Ma Account (`161388682021`) carries a name that strongly suggests broad or administrative permissions. The "unused" component of the name may indicate the role is dormant, but an unreviewed administrative role — even if currently inactive — represents a standing blast-radius risk: it can be assumed by any principal with the right trust relationship at any time.
 
-> **Recommended action (`risk:security:cloudox-demo-sandbox-unused-admin`):** Review attached policies on `cloudox-demo-sandbox-unused-admin`; apply least-privilege scoping. Confirm whether the role is still needed; if not, remove it.
+Recommended action: Inspect attached and inline policies to confirm actual permission scope; apply least-privilege scoping or remove the role if it is genuinely unused.
 
-Additional roles present in the Sandbox account include `OrganizationAccountAccessRole`, `cloudox-demo-sandbox-scratch-lambda`, and `stacksets-exec-899a82a2cb437e970934262f85c7628a`. The StackSets execution role (`stacksets-exec-...`) and the CloudFormation StackSets org-admin service-linked role in the Management Account (`arn:aws:iam::110319895932:role/aws-service-role/stacksets.cloudformation.amazonaws.com/AWSServiceRoleForCloudFormationStackSetsOrgAdmin`) indicate that StackSets-based deployment is in use across the organisation — a trust path that should be in scope for governance review.
+Evidence: `arn:aws:iam::161388682021:role/cloudox-demo-sandbox-unused-admin` | Item: `risk:security:cloudox-demo-sandbox-unused-admin`
 
-**Network exposure context**
+**Supporting roles in scope (Management Account)**
 
-Two security groups are open to the internet: `sg-0459201826f8de5b3` and `sg-06f2b4190bf01d261` in the Workload Prod Account (`122122642149`), and `sg-054446d655de1ee7f` in the Sandbox Ma Account (`161388682021`). The resources attached to these groups are not detailed in this section's evidence; exposure should be assessed in conjunction with the network posture view.
+Two additional roles in the Management Account (`110319895932`) are present in the evidence set:
+- `cloudox-demo-org-trail-logs` (`arn:aws:iam::110319895932:role/cloudox-demo-org-trail-logs`) — associated with the organisation-level CloudTrail trail (`arn:aws:cloudtrail:eu-central-1:110319895932:trail/cloudox-demo-org-trail-o-aaaapzvebq`), indicating log-delivery trust.
+- `AWSServiceRoleForCloudFormationStackSetsOrgAdmin` — the AWS-managed service-linked role for StackSets org-admin delegation.
+
+These roles appear consistent with their named purposes; no anomaly is flagged for them in this section.
+
+**Sandbox scratch Lambda role**
+
+`cloudox-demo-sandbox-scratch-lambda` (`arn:aws:iam::161388682021:role/cloudox-demo-sandbox-scratch-lambda`) is present in the Sandbox Ma Account. No privilege anomaly is flagged for this role in the current evidence set; it is noted for completeness.
+
+---
 
 ### Access Risks
 
-**IAM Access Analyzer — coverage gap (medium severity, Likely)**
+Two medium-severity, organisation-wide detective-control gaps are identified. Both affect the same five accounts and share the same recommended remediation path.
 
-IAM Access Analyzer, which identifies resources shared with external principals, is enabled in only **1 of 6** scanned accounts. The five accounts without coverage are:
+| Risk | Severity | Confidence | Accounts Affected |
+|---|---|---|---|
+| Uneven IAM Access Analyzer coverage | Medium | Likely | 5 of 6 scanned |
+| Uneven GuardDuty threat detection coverage | Medium | Likely | 5 of 6 scanned |
 
-| Account ID | Friendly Name |
-|---|---|
-| `122980216815` | Log Archive Account |
-| `105769365151` | Workload Dev Account |
-| `122122642149` | Workload Prod Account |
-| `110319895932` | Management Account |
-| `161388682021` | Sandbox Ma Account |
+**IAM Access Analyzer — 5 accounts uncovered**
 
-The absence of Access Analyzer in the Management Account and both Workload accounts is particularly significant: unintended external resource sharing (S3 buckets, IAM roles, KMS keys, etc.) in these accounts would go undetected. The Log Archive Account confidence is Likely rather than Verified.
+IAM Access Analyzer is enabled in 1 of 6 scanned accounts. The five accounts without coverage are: Log Archive Account (`122980216815`), Workload Dev Account (`105769365151`), Workload Prod Account (`122122642149`), Management Account (`110319895932`), and Sandbox Ma Account (`161388682021`). Without Access Analyzer, externally-shared resources (S3 buckets, IAM roles, KMS keys, etc.) in these accounts will not be automatically flagged — reducing the team's ability to detect unintended public or cross-account exposure.
 
-> **Recommended action (`risk:security:aws-accessanalyzer-analyzer`):** Enable IAM Access Analyzer consistently across all accounts, ideally org-wide via a delegated administrator in the Management Account.
+Recommended action: Enable IAM Access Analyzer org-wide via a delegated administrator to ensure consistent, centralised coverage.
 
-**GuardDuty — coverage gap (medium severity, Likely)**
+Item: `risk:security:aws-accessanalyzer-analyzer`
 
-GuardDuty threat detection is similarly enabled in only **1 of 6** scanned accounts. The same five accounts listed above lack coverage. Without GuardDuty, anomalous API activity, credential compromise, and network-level threats in those accounts produce no automated findings.
+**GuardDuty — 5 accounts uncovered**
 
-> **Recommended action (`risk:security:aws-guardduty-detector`):** Enable GuardDuty org-wide via a delegated administrator. This can be done centrally from the Management Account with minimal per-account effort.
+GuardDuty threat detection is enabled in 1 of 6 scanned accounts. The same five accounts listed above are uncovered. This means anomalous API calls, credential exfiltration signals, and network-level threats in those accounts — including the Management Account and Workload Prod Account — will not generate GuardDuty findings.
 
-**CloudTrail**
+Recommended action: Enable GuardDuty org-wide via a delegated administrator to ensure consistent threat detection and centralised finding aggregation.
 
-An organisation-level CloudTrail trail (`cloudox-demo-org-trail-o-aaaapzvebq`) exists in `eu-central-1` under the Management Account (`110319895932`), with a dedicated log-delivery role (`cloudox-demo-org-trail-logs`). This provides a baseline audit record, but the absence of GuardDuty and Access Analyzer means that trail data is not being actively analysed for threats or external-access anomalies in most accounts.
+Item: `risk:security:aws-guardduty-detector`
 
-**Security Hub**
+**Security group exposure (Workload Prod Account)**
 
-No evidence of Security Hub enablement was discovered across any account. This is a material governance gap: without Security Hub, there is no centralised aggregation of findings from GuardDuty, Access Analyzer, or other security services, and no automated compliance standard scoring (e.g. AWS Foundational Security Best Practices, CIS Benchmarks).
+Two security groups are present in the evidence set for the Workload Prod Account (`122122642149`): `sg-0459201826f8de5b3` and `sg-06f2b4190bf01d261`. Their rule configurations are not detailed in this section's package; network exposure analysis is covered in the relevant network/exposure section of this view.
+
+A third security group, `sg-054446d655de1ee7f`, is present in the Sandbox Ma Account (`161388682021`).
+
+> **Governance gap — Security Hub:** No Security Hub enablement was discovered across any scanned account. Security Hub would provide a normalised, aggregated view of findings from GuardDuty, Access Analyzer, and other services. Its absence means there is no single-pane governance layer for security findings today.

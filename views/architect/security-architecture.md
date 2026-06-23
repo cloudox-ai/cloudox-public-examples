@@ -10,75 +10,59 @@
 
 ## Security Architecture
 
-> **Confidence: Likely** — Derived from graph evidence; some unknowns remain (see below).
+The most urgent design issue is a **critical, decision-required exposure** in the sandbox account: a security group with world-open ingress on SSH (22) and PostgreSQL (5432). This demands an explicit architectural decision before any further work proceeds. Alongside this, the production Atlas workload presents a deliberate but unconfirmed internet-facing surface that architects should validate against intent. IAM trust is broadly established via `OrganizationAccountAccessRole` across all member accounts, but at least one over-privileged, apparently unused admin role warrants attention. No Security Hub enablement was discovered, leaving automated security posture management as a gap.
 
-The most pressing architectural concern is an unrestricted security group in the sandbox account that exposes SSH (port 22) and PostgreSQL (port 5432) directly to the internet — this requires an immediate design decision. Beyond that critical item, the production Atlas workload carries an expected internet-facing edge (ALB + public subnets) whose exposure is verified but intentional by design; the architecture question is whether the current segmentation is sufficient.
-
----
+*Overall confidence: Likely — derived from graph evidence; some unknowns remain.*
 
 ### Trust & Identity
 
-The environment surfaces **72 IAM roles** across accounts and **0 customer-managed IAM policies** — all permissions are expressed through inline or AWS-managed policies, which limits reuse and central auditability of permission boundaries.
+The environment uses `OrganizationAccountAccessRole` as the cross-account trust mechanism, with instances present in five member accounts: `122980216815` (AROAAAAAB33DHRZ72LLFE), `110019496666` (AROAAAAACLQX0PDP245PQ), `105769365151` (AROAAAAAC6A0RHGHCRIWC), `122122642149` (AROAAAAADGV42TTJ3H83B), and `161388682021` (AROAAAAADE0WRYDYAJBXU). This is the standard AWS Organizations break-glass pattern, but its breadth means the management account is a high-value lateral-movement target — architects should confirm that access to this role is tightly controlled and audited.
 
-Key roles observed across accounts:
+A CloudTrail org-level trail (`arn:aws:cloudtrail:eu-central-1:110319895932:trail/cloudox-demo-org-trail-o-aaaapzvebq`) is present in the management account (`110319895932`), with a dedicated log-delivery role (`arn:aws:iam::110319895932:role/cloudox-demo-org-trail-logs`). This provides a centralised audit record across the organisation.
 
-| Role | Account | Architectural Significance |
-|---|---|---|
-| `cloudox-demo-sandbox-unused-admin` | 161388682021 | Admin-scoped role with no evidence of active use — high-privilege, low-justification |
-| `OrganizationAccountAccessRole` | 122980216815, 110019496666, 105769365151, 122122642149, 161388682021 | Standard cross-account break-glass role present in all member accounts |
-| `cloudox-demo-atlas-dev-ecs-exec` / `ecs-task` | 105769365151 | ECS execution and task identity for the dev Atlas workload |
-| `cloudox-demo-atlas-dev-lambda` | 105769365151 | Lambda execution identity in dev |
-| `cloudox-demo-atlas-prod-ecs-exec` | 122122642149 | ECS execution identity in prod |
-| `cloudox-demo-atlas-prod-backup` | 122122642149 | Backup automation role in prod |
-| `cloudox-demo-atlas-prod-dr-replicator` | 122122642149 | DR replication role — implies cross-region or cross-account data movement |
-| `cloudox-demo-sandbox-scratch-lambda` | 161388682021 | Scratch Lambda role in sandbox — scope unknown |
-| `stacksets-exec-*` | 161388682021 | CloudFormation StackSets execution role, managed by org admin |
+The sandbox account (`161388682021`) contains a role named **cloudox-demo-sandbox-unused-admin** (`AROAAAAADPCL3BVEXUDTH`, `arn:aws:iam::161388682021:role/cloudox-demo-sandbox-unused-admin`). The name signals administrative privilege and apparent disuse — this is a standing access risk and should be reviewed for removal or scope reduction.
 
-Org-level CloudTrail (`cloudox-demo-org-trail-o-aaaapzvebq`) is present in `eu-central-1` under account `110319895932`, with a dedicated log-delivery role (`cloudox-demo-org-trail-logs`). CloudFormation StackSets org-admin delegation is also active (`AWSServiceRoleForCloudFormationStackSetsOrgAdmin`), indicating centrally-managed baseline deployments.
+Workload-specific roles follow a least-privilege naming pattern: the Atlas dev account (`105769365151`) has separate roles for ECS exec (`cloudox-demo-atlas-dev-ecs-exec`, AROAAAAADLCZISR8G4FBU), ECS task (`cloudox-demo-atlas-dev-ecs-task`, AROAAAAADLX1PNSXHC8KC), and Lambda (`cloudox-demo-atlas-dev-lambda`, AROAAAAACJ2F32IXZJ88A). The Atlas prod account (`122122642149`) similarly separates backup (`cloudox-demo-atlas-prod-backup`, AROAAAAAADXSPE5ZZWXXZ), DR replication (`cloudox-demo-atlas-prod-dr-replicator`, AROAAAAACBUQ1L1VU4R09), and ECS exec (`cloudox-demo-atlas-prod-ecs-exec`, AROAAAAABKVS2YU8FPYNK) concerns. This role decomposition is architecturally sound for blast-radius containment.
 
-**Design concern:** `cloudox-demo-sandbox-unused-admin` (`AROAAAAADPCL3BVEXUDTH`) carries admin-level permissions and shows no evidence of active use. An unused admin role in a sandbox account is a standing privilege escalation path that should be removed or scoped down.
+A StackSets service-linked role (`arn:aws:iam::110319895932:role/aws-service-role/stacksets.cloudformation.amazonaws.com/AWSServiceRoleForCloudFormationStackSetsOrgAdmin`) in the management account and a corresponding StackSets execution role in the sandbox (`arn:aws:iam::161388682021:role/stacksets-exec-899a82a2cb437e970934262f85c7628a`) indicate that CloudFormation StackSets is used for cross-account infrastructure deployment — a relevant dependency for any change management or IaC modernisation work.
 
-**Unknown:** No Security Hub enablement was discovered. There is no evidence of centralised findings aggregation or compliance posture scoring across accounts.
-
----
+The summary indicates **72 IAM roles** across the environment and **0 customer-managed policies**. The absence of customer-managed policies means all permission boundaries are expressed through AWS-managed policies or inline policies — a gap that limits reuse, auditability, and fine-grained least-privilege enforcement.
 
 ### Exposure & Boundaries
 
-Four security groups and one load balancer carry verified internet-facing exposure. One is **critical** and requires a decision; the others are **medium** severity and consistent with an intentional public-edge pattern.
+Three security groups are flagged as open to the internet, spanning two accounts and two distinct risk levels.
 
-#### Critical — Sandbox permissive group
+**Critical (decision required):**
 
-`cloudox-demo-sandbox-sg-permissive` (`sg-054446d655de1ee7f`, account `161388682021`, `eu-central-1`) allows `0.0.0.0/0` and `::/0` ingress on:
-- **Port 22 (SSH)** — direct shell access from the internet
-- **Port 5432 (PostgreSQL)** — database port directly reachable from the internet
-
-This is a **Priority 2 / Critical** finding (`security_exposure:security:sg-054446d655de1ee7f`). A decision is required: confirm whether this exposure is intentional (e.g., a temporary scratch environment) and restrict or remove it if not. The combination of SSH and a database port open to the world in the same group is architecturally indefensible in any persistent environment.
-
-#### Medium — Production Atlas edge exposure
-
-The following resources form the internet-facing edge of the Atlas production workload (account `122122642149`, `eu-central-1`) and are consistent with a standard public ALB pattern:
-
-| Resource | ID | Open Port(s) | Finding |
+| Resource | Account | Ports Open | Item ID |
 |---|---|---|---|
-| `cloudox-demo-atlas-prod-alb` | `cloudox-demo-atlas-prod-alb` | — (internet-facing scheme) | `security_exposure:security:cloudox-demo-atlas-prod-alb` |
-| `cloudox-demo-atlas-prod-sg-edge` | `sg-0459201826f8de5b3` | 443 | `security_exposure:security:sg-0459201826f8de5b3` |
-| `cloudox-demo-atlas-prod-sg-alb` | `sg-06f2b4190bf01d261` | 80 | `security_exposure:security:sg-06f2b4190bf01d261` |
+| cloudox-demo-sandbox-sg-permissive (`sg-054446d655de1ee7f`) | `161388682021` | 22 (SSH), 5432 (PostgreSQL) | `security_exposure:security:sg-054446d655de1ee7f` |
 
-Port 80 open on `cloudox-demo-atlas-prod-sg-alb` is worth confirming: if the ALB is expected to redirect HTTP→HTTPS, the security group rule is technically required but the redirect behaviour should be validated at the listener level.
+World-open ingress on SSH and PostgreSQL from `0.0.0.0/0`/`::/0` is a critical design defect. Direct database port exposure to the internet is almost never intentional in a production or shared environment. Architects must confirm whether this is a temporary scratch configuration or a persistent misconfiguration, and restrict or remove the rules accordingly.
 
----
+**Medium (confirm intent):**
+
+| Resource | Account | Ports Open | Item ID |
+|---|---|---|---|
+| cloudox-demo-atlas-prod-sg-edge (`sg-0459201826f8de5b3`) | `122122642149` | 443 | `security_exposure:security:sg-0459201826f8de5b3` |
+| cloudox-demo-atlas-prod-sg-alb (`sg-06f2b4190bf01d261`) | `122122642149` | 80 | `security_exposure:security:sg-06f2b4190bf01d261` |
+| cloudox-demo-atlas-prod-alb | (account unknown) | Internet-facing ALB | `security_exposure:security:cloudox-demo-atlas-prod-alb` |
+
+The Atlas prod edge and ALB security groups (`sg-0459201826f8de5b3`, `sg-06f2b4190bf01d261`) allow world-open ingress on 443 and 80 respectively, consistent with an internet-facing application load balancer (`cloudox-demo-atlas-prod-alb`). This pattern is expected for a public-facing service, but architects should confirm: (a) whether HTTP/80 should redirect to HTTPS rather than remain open, and (b) whether WAF or AWS Shield is in front of the ALB — neither is evidenced in this section's package.
 
 ### Segmentation
 
-Four public subnets are confirmed across the prod and dev Atlas environments, all in `eu-central-1`. Their route tables forward to an Internet Gateway, making them internet-reachable by definition.
+Four public subnets are identified across the Atlas prod and Atlas dev environments, all in `eu-central-1`. Their route tables forward traffic to an Internet Gateway, confirming direct internet reachability:
 
-| Subnet | Account | Environment | Finding |
+| Subnet | Friendly Name | Account | Item ID |
 |---|---|---|---|
-| `cloudox-demo-atlas-prod-public-a` (`subnet-013a24d318ed6f3d0`) | 122122642149 | Prod | `security_exposure:security:subnet-013a24d318ed6f3d0` |
-| `cloudox-demo-atlas-prod-public-b` (`subnet-016c22941a019a137`) | 122122642149 | Prod | `security_exposure:security:subnet-016c22941a019a137` |
-| `cloudox-demo-atlas-dev-public-a` (`subnet-065f522206524ab12`) | 105769365151 | Dev | `security_exposure:security:subnet-065f522206524ab12` |
-| `cloudox-demo-atlas-dev-public-b` (`subnet-0f64d71c952a7898a`) | 105769365151 | Dev | `security_exposure:security:subnet-0f64d71c952a7898a` |
+| `subnet-013a24d318ed6f3d0` | cloudox-demo-atlas-prod-public-a | `122122642149` | `security_exposure:security:subnet-013a24d318ed6f3d0` |
+| `subnet-016c22941a019a137` | cloudox-demo-atlas-prod-public-b | `122122642149` | `security_exposure:security:subnet-016c22941a019a137` |
+| `subnet-065f522206524ab12` | cloudox-demo-atlas-dev-public-a | `105769365151` | `security_exposure:security:subnet-065f522206524ab12` |
+| `subnet-0f64d71c952a7898a` | cloudox-demo-atlas-dev-public-b | `105769365151` | `security_exposure:security:subnet-0f64d71c952a7898a` |
 
-The presence of named public subnets in both prod and dev is consistent with a multi-tier VPC design (public subnets for the ALB/edge, private subnets for compute and data). However, the package does not contain evidence of private subnet configuration, NAT gateway placement, or network ACL rules — so the depth of the private-tier segmentation cannot be confirmed from available evidence.
+The naming convention (`public-a`, `public-b`) suggests a deliberate multi-AZ public tier, which aligns with the internet-facing ALB pattern in the prod account. The presence of equivalent public subnets in the dev account (`105769365151`) is worth reviewing — dev workloads exposed via public subnets carry the same internet-reachability risk as prod, and tighter egress-only or private-subnet configurations are worth considering for non-production environments.
 
-**Modernization opportunity:** With 0 customer-managed IAM policies observed, there is a clear opportunity to introduce permission boundaries and reusable managed policies — particularly to constrain the `OrganizationAccountAccessRole` in each member account and to replace any inline policies on the ECS task/exec roles with auditable, version-controlled managed policies.
+Private subnet and NAT Gateway topology is not covered in this section's package. The segmentation picture — specifically whether application and data tiers are isolated in private subnets behind the public ALB tier — is a material unknown for a complete security architecture assessment.
+
+> **Modernisation opportunity:** The absence of customer-managed IAM policies, combined with 72 roles, suggests permission management has grown organically. Introducing a customer-managed policy library (or AWS IAM Identity Center permission sets if not already in use) would improve auditability and enable consistent least-privilege enforcement across accounts. Additionally, confirming Security Hub enablement across the organisation would provide continuous posture management — no evidence of this was found.

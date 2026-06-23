@@ -10,31 +10,27 @@
 
 ## Optimization Opportunities
 
-> **Confidence: Likely** — Spend data is unavailable for this run (Cost Explorer collection is disabled). All analysis is derived from discovered architecture only; no dollar savings figures can be stated.
+> **Confidence: Likely** — Spend data is unavailable for this run; all analysis is derived from discovered architecture. No dollar savings figures can be stated. Exact cost attribution requires AWS Cost Explorer or CUR.
 
-The one identified candidate in this section is an **architectural risk item, not a cost-saving opportunity**. There are currently **no optimization candidates with a direct cost-reduction angle** surfaced from the discovered architecture. The absence of spend data and utilization metrics (see Unknowns below) materially limits what can be validated at this time.
+One architecture-level candidate has been identified that warrants validation. No utilization-based right-sizing or idle-resource recommendations are available in this run (see gaps below).
 
 ### Optimization Candidates
 
-No cost-reduction optimization candidates were identified from the discovered architecture in this run. The summary confirms **0 optimization candidates** across 807 resources in 7 accounts.
+| # | Resource | Finding | Recommended Action | Priority |
+|---|----------|---------|-------------------|----------|
+| 1 | `cloudox-demo-atlas-prod-pg` | Single-AZ RDS instance — no Multi-AZ standby configured. A zone failure could cause downtime or data loss. | Evaluate enabling a Multi-AZ standby for resilience. | 4 |
 
-One architectural finding was surfaced that carries an indirect cost relevance — unplanned downtime from a single-AZ database can generate incident costs and recovery effort:
+**`cloudox-demo-atlas-prod-pg`** (`modernization_opportunity:architecture:cloudox-demo-atlas-prod-pg`) is a production database instance running without a Multi-AZ standby. This is flagged primarily as a **resilience gap**, not a cost-saving opportunity — enabling Multi-AZ would *increase* spend (a standby instance incurs additional charges). The FinOps relevance is the inverse: the current single-AZ configuration avoids that cost, but at the expense of availability and recovery posture. Finance and engineering should align on whether the risk trade-off is intentional before treating the current configuration as a cost optimisation.
 
-| Resource | Finding | Recommended Action | Requires Validation |
-|---|---|---|---|
-| `cloudox-demo-atlas-prod-pg` | Single-AZ DBInstance — a zone failure could cause downtime or data loss | Evaluate enabling Multi-AZ for resilience | Yes |
-
-*Source: `modernization_opportunity:architecture:cloudox-demo-atlas-prod-pg`*
-
-Enabling Multi-AZ for `cloudox-demo-atlas-prod-pg` would **increase** the RDS line item (standby instance charges apply), but reduces the risk of unplanned recovery costs. This is a resilience trade-off, not a savings action — finance and engineering should evaluate it together against the workload's recovery requirements.
+*Requires validation before any action is taken.*
 
 ### Estimated Impact
 
-No estimated savings impact can be stated. Spend data is unavailable, and CloudoX does not collect CloudWatch utilization metrics in this version, so idle-resource or right-sizing recommendations based on actual usage are not available.
+No spend data is available for this run, so no savings estimates or cost impact figures can be provided. The architectural finding above carries a **resilience impact** (reduced availability / recovery posture) rather than a direct savings opportunity. Enabling Multi-AZ on `cloudox-demo-atlas-prod-pg` would represent an incremental cost increase, not a reduction.
 
-The following gaps prevent a complete optimization picture and should be resolved before drawing conclusions:
+The following gaps limit the completeness of this section and should be addressed to unlock a fuller optimization picture:
 
-- **Cost Explorer is disabled** (`CLOUDOX_COST__ENABLED=false`). Enabling it would unlock spend-attributed driver analysis and dollar-level opportunity sizing.
-- **No utilization metrics** are collected. Idle EC2, underutilized RDS, and right-sizing candidates cannot be detected without CloudWatch data.
-- **Untagged resources**: 761 of 807 resources carry no Environment / Stage / Tier tag, making workload-level cost attribution unreliable. Tag coverage is a prerequisite for meaningful FinOps segmentation.
-- **Collector gaps**: RDS read replicas, provisioned IOPS, DynamoDB capacity mode, Direct Connect, and S3 storage classes are not captured — cost drivers for these services are not detected in this run.
+- **Cost Explorer is disabled** (`CLOUDOX_COST__ENABLED=false`): no spend figures, trending, or cost-per-service breakdowns are available.
+- **CloudWatch utilization metrics are not collected**: idle resources, underutilized instances, and right-sizing candidates based on actual usage cannot be identified in this version.
+- **Several resource attributes are not captured** by current collectors (RDS read replicas, RDS provisioned IOPS, DynamoDB capacity mode, Direct Connect, S3 storage classes), so cost drivers for those services are not detected.
+- **761 resources carry no Environment / Stage / Tier tag** and rely on inference for classification, which may affect the accuracy of environment-level cost attribution.

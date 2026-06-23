@@ -10,39 +10,42 @@
 
 ## Cost Overview
 
-Spend figures are not available for this analysis run — Cost Explorer collection was disabled at discovery time. What follows is architecture-derived: the accounts and resource patterns that are structurally positioned to carry charges, without dollar amounts attached. Treat this as a map of *where to look* in Cost Explorer or CUR, not a billing report.
+Spend figures are not available for this analysis run — Cost Explorer collection was disabled at discovery time (`CLOUDOX_COST__ENABLED=false`). The observations below are derived entirely from the discovered architecture. Dollar amounts, period totals, and service-level breakdowns should be obtained directly from AWS Cost Explorer or your Cost and Usage Report (CUR).
 
-> **Confidence: Likely** — All cost driver observations are inferred from discovered architecture. No spend data was collected. Validate against your billing data before acting.
+> **Confidence: Likely** — All cost driver observations are inferred from architectural patterns, not from billing data. Treat them as hypotheses to validate against your actual spend.
 
 ### Total Spend Context
 
-No spend figures can be reported. Cost Explorer collection was not enabled during this discovery run (`CLOUDOX_COST__ENABLED=false`), so no UnblendedCost data is available for any billing period.
+No billing data was collected for this run, so no total spend figure, trend, or period-over-period comparison can be stated. The environment spans seven accounts across two categories:
 
-Seven accounts are in scope across this environment:
+| Account | Role |
+|---|---|
+| Management Account (`110319895932`) | Payer / management |
+| Workload Prod Account (`122122642149`) | Production workloads |
+| Workload Dev Account (`105769365151`) | Development workloads |
+| Sandbox Ma Account (`161388682021`) | Sandbox / experimentation |
+| Platform Account (`150982215529`) | Shared platform services |
+| Log Archive Account (`122980216815`) | Centralised log storage |
+| Audit Account (`110019496666`) | Security audit trail |
 
-| Account | Friendly Name | Confidence |
-|---|---|---|
-| 110319895932 | Management Account | Verified |
-| 161388682021 | Sandbox Ma Account | Verified |
-| 105769365151 | Workload Dev Account | Verified |
-| 122122642149 | Workload Prod Account | Verified |
-| 122980216815 | Log Archive Account | Likely |
-| 110019496666 | Audit Account | Likely |
-| 150982215529 | Platform Account | Likely |
+This multi-account structure is typical of an AWS Organizations landing zone. In practice, the majority of compute and data spend tends to concentrate in the Workload Prod Account and Platform Account, while Log Archive and Audit accounts carry ongoing storage costs that grow with retention. These are patterns to confirm against your CUR — they are not dollar attributions.
 
-The presence of dedicated **Workload Dev** and **Workload Prod** accounts alongside a **Sandbox** account suggests at least three distinct spend pools that should be tracked separately in Cost Explorer. The **Log Archive** and **Audit** accounts are typical AWS Control Tower foundational accounts and generally carry lower but non-trivial storage and API costs.
+To establish a baseline, enable Cost Explorer collection in CloudoX and re-run discovery, or pull a service-level CUR breakdown filtered by linked account for the accounts listed above.
 
 ### Where Cost Concentrates
 
-Without spend data, concentration can only be described structurally. Based on the discovered account topology, cost is most likely to concentrate in:
+Without spend data, concentration can only be described architecturally. The discovery identified **7 architectural cost driver patterns** across the environment and **0 optimization candidates** were surfaced at this time (optimization candidates require either spend data or CloudWatch utilization metrics, neither of which was collected in this run).
 
-- **Workload Prod Account (122122642149)** — Production workload accounts are the primary driver of compute, data transfer, and managed service charges in most AWS environments. This is the highest-priority account to examine in Cost Explorer.
-- **Workload Dev Account (105769365151)** — Development environments frequently carry disproportionate cost relative to business value, particularly from always-on compute and over-provisioned resources. A candidate for rightsizing and scheduling controls, but requires validation against actual usage data.
-- **Log Archive Account (122980216815)** — Centralised log archiving accumulates S3 storage costs continuously. S3 storage class selection and lifecycle policies are not captured by the current collectors, so the cost profile here is not known.
-- **Platform Account (150982215529)** — Shared platform services (networking, DNS, shared tooling) can carry steady-state costs that are easy to overlook. Exact services in this account are not detailed in this package.
+Key structural factors that typically drive cost concentration in an environment of this shape:
 
-The **Management Account (110319895932)** and **Audit Account (110019496666)** typically carry lower direct workload costs but may include AWS Organizations, CloudTrail, and Config charges.
+- **Production workload account** — Compute, data transfer, and managed service charges in `Workload Prod Account` are the most likely single largest cost centre. Sizing, reservation coverage, and Savings Plans attachment for this account should be the first validation target.
+- **Platform shared services** — The `Platform Account` commonly hosts networking constructs (NAT Gateways, Transit Gateway attachments, VPN endpoints) and shared tooling. NAT Gateway data-processing charges in particular can be a non-obvious cost driver that does not appear large per resource but accumulates at scale.
+- **Log and audit storage** — `Log Archive Account` and `Audit Account` accumulate S3 storage continuously. S3 storage class selection and lifecycle policies are not captured by current collectors (see unknowns below), so the cost impact of log retention is not yet quantified.
+- **Sandbox account** — `Sandbox Ma Account` can carry uncontrolled spend if resource lifecycle governance is not enforced. This is worth filtering in Cost Explorer to confirm it is bounded.
 
-**What is not visible in this analysis:** CloudWatch utilization metrics are not collected in this version, so idle or underutilized resource identification is not possible. RDS read replicas, provisioned IOPS, DynamoDB capacity mode, Direct Connect, and S3 storage class details are also outside current collector coverage — these can be material cost drivers that will not appear here.
+**What to do next:**
+1. Enable cost collection and re-run to get dollar-level attribution per account and service.
+2. Pull a CUR or Cost Explorer breakdown by Linked Account × Service for the last three complete months to confirm which accounts and services dominate.
+3. Check Savings Plans and Reserved Instance coverage for the Workload Prod Account — this is the highest-probability optimization lever before any architectural changes.
 
-**Recommended next step (requires validation):** Enable Cost Explorer collection in CloudoX and re-run discovery to populate spend figures. In the interim, filter Cost Explorer by the seven account IDs above, grouped by account and service, to establish the actual concentration picture.
+*Note: CloudWatch utilization metrics are not collected in this version, so idle/underutilized resource recommendations and right-sizing signals are not available. RDS read replicas, provisioned IOPS, DynamoDB capacity mode, Direct Connect, and S3 storage classes are also outside current collector scope — cost drivers for those resources are not detected.*

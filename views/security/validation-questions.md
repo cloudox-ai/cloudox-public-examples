@@ -10,30 +10,21 @@
 
 ## Validation Questions
 
-**Confidence: Likely** — Derived from graph evidence; some unknowns remain. The item below is flagged **Assumed** and requires owner confirmation before any remediation decision.
+**Confidence: Likely** — derived from graph evidence; some unknowns remain.
 
-Two broader signals from discovery frame the urgency of these questions: 72 IAM roles exist across the environment, no customer-managed policies were found, and 2 security groups are open to the internet. With no Security Hub enablement discovered, there is no automated findings layer to catch privilege drift or exposure — making manual validation of the items below more important.
+One open question requires owner confirmation before a remediation or retention decision can be made. It does not block other findings but carries a meaningful identity-risk signal that governance teams should resolve promptly.
 
 ### Questions to Resolve
 
-#### IAM Role: `cloudox-demo-sandbox-unused-admin` (Account `161388682021`)
+| # | Role | Account | Question | Confidence |
+|---|------|---------|----------|------------|
+| 1 | `cloudox-demo-sandbox-unused-admin` | `161388682021` | Does this role require its current privilege level, and who owns it? | Assumed |
 
-> **Validation question:** Does IAM role `cloudox-demo-sandbox-unused-admin` require its current privilege level, and who owns it?
+**Detail — `cloudox-demo-sandbox-unused-admin` (account `161388682021`)**
 
-**Confidence: Assumed.** The role name and its presence in the sandbox account (`161388682021`) suggest administrative privileges that may not be intentional or actively needed, but this has not been confirmed through policy inspection or usage data available in this package.
+The role name contains the word *unused*, which raises the question of whether it was created temporarily and never decommissioned, or whether it is an intentional standing admin role (`validation_question:security:cloudox-demo-sandbox-unused-admin`). Because the privilege level appears administrative and no ownership or purpose metadata was found, the current state cannot be confirmed as intentional.
 
-| Attribute | Value |
-|---|---|
-| Entity type | IAM Role |
-| Account | `161388682021` |
-| Role ID | `AROAAAAADPCL3BVEXUDTH` |
-| Friendly name | `cloudox-demo-sandbox-unused-admin` |
-| Decision required | No (but validation is recommended) |
+- **What to confirm with the environment owner:** Is the administrative privilege level still required? If the role is genuinely unused, it is a candidate for removal or privilege reduction. If it is active, ownership and a business justification should be documented.
+- **Why it matters:** An unowned, potentially dormant role with administrative scope in account `161388682021` represents a latent privilege-escalation path if credentials or trust relationships are ever abused.
 
-**Why this matters for Security & Governance:** An administrative role whose ownership and necessity are unconfirmed represents a standing privilege escalation path. If the role is unused or unowned, it should be disabled or scoped down. If it is legitimately required, it should be documented with a named owner and reviewed under your access governance process.
-
-**Recommended next step:** Confirm with the sandbox account owner whether this role is actively used, by whom, and whether administrative scope is justified. Check last-used data via IAM credential reports or AWS Access Analyzer if available.
-
----
-
-*No evidence found for additional validation questions in this section beyond the one item above.*
+> **Note:** No Security Hub enablement was discovered in this environment. Centralised finding aggregation and compliance scoring are therefore not available as corroborating evidence for this or other questions.
