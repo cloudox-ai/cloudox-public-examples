@@ -18,9 +18,18 @@ Start with the **[Knowledge Views index](./views/README.md)**, then open the vie
 | [Operations](./views/operations/README.md) | Platform / Operations Engineers |
 | [Security](./views/security/README.md) | Security & Governance teams |
 | [FinOps](./views/finops/README.md) | FinOps / Finance |
-| [Reference](./reference/README.md) | Engineers, architects, consultants & security reviewers — deterministic inventory and relationship tables straight from the knowledge graph. |
 
 Each view is a self-contained folder: its `README.md` indexes the view's sections, every section is a standalone Markdown file you can read on its own, and `diagrams/` holds the rendered architecture diagrams.
+
+## Reference & deterministic layers
+
+Beyond the narrated views, this report ships **deterministic layers** built straight from the knowledge graph (no AI narration) — facts you can audit directly:
+
+| Layer | What it gives you |
+| --- | --- |
+| [Reference](./reference/README.md) | Inventory & relationship tables straight from the knowledge graph: network routing, connectivity, security flows, public exposure, service dependencies, identity & trust, DNS, encryption, and tagging coverage. |
+| [Cost Intelligence](./cost-intelligence.md) | Spend explained in architectural context — graph-grounded cost drivers and optimization candidates (not a billing export). |
+| [Knowledge Quality](./knowledge-quality.md) | How well each view answers its audience's questions — deterministic, per-view quality scoring. |
 
 ## About CloudoX
 

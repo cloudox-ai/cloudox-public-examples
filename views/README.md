@@ -23,3 +23,13 @@ Pick the view that matches your question:
 | [Security](./security/README.md) | Security & Governance teams | Likely | 8 |
 
 _Navigation for these views is in `navigation.json` (view-aware: each view lists its own section structure)._
+
+## Reference & deterministic layers
+
+Beyond the narrated views, this report ships **deterministic layers** built straight from the knowledge graph (no AI narration) — facts you can audit directly:
+
+| Layer | What it gives you |
+| --- | --- |
+| [Reference](../reference/README.md) | Inventory & relationship tables straight from the knowledge graph: network routing, connectivity, security flows, public exposure, service dependencies, identity & trust, DNS, encryption, and tagging coverage. |
+| [Cost Intelligence](../cost-intelligence.md) | Spend explained in architectural context — graph-grounded cost drivers and optimization candidates (not a billing export). |
+| [Knowledge Quality](../knowledge-quality.md) | How well each view answers its audience's questions — deterministic, per-view quality scoring. |
