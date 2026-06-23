@@ -18,18 +18,18 @@ _Sorted riskiest first: Not encrypted → Unknown → Encrypted._
 |---|---|---|---|---|---|---|
 | cloudox-demo-sandbox-scratch | AWS::DynamoDB::Table | Unknown | — | — | Unknown | `cloudox-demo-sandbox-scratch` |
 | cloudox-demo-atlas-dev-items | AWS::DynamoDB::Table | Unknown | — | — | Unknown | `cloudox-demo-atlas-dev-items` |
-| cloudox-demo-atlas-prod-items | AWS::DynamoDB::Table | Encrypted | Customer-managed (KMS) | arn:aws:kms:eu-central-1:122122642149:key/1ac02cc5-a23f-75da-30c9-99c095a072fa | Verified | `cloudox-demo-atlas-prod-items` |
-| cloudox-demo-atlas-prod-pg | AWS::RDS::DBInstance | Encrypted | AWS-managed | — | Verified | `cloudox-demo-atlas-prod-pg` |
+| cloudox-demo-atlas-prod-items | AWS::DynamoDB::Table | Encrypted | KMS (key type unknown) | arn:aws:kms:eu-central-1:122122642149:key/1ac02cc5-a23f-75da-30c9-99c095a072fa | Verified | `cloudox-demo-atlas-prod-items` |
+| cloudox-demo-atlas-prod-pg | AWS::RDS::DBInstance | Encrypted | Unknown | — | Verified | `cloudox-demo-atlas-prod-pg` |
 | cloudox-cust-sandbox-a8d4 | AWS::S3::Bucket | Encrypted (AES256) | AWS-managed | — | Verified | `cloudox-cust-sandbox-a8d4` |
 | cloudox-public-example | AWS::S3::Bucket | Encrypted (AES256) | AWS-managed | — | Verified | `cloudox-public-example` |
 | cloudox-demo-access-logs-122980216815-eu-central-1 | AWS::S3::Bucket | Encrypted (AES256) | AWS-managed | — | Verified | `cloudox-demo-access-logs-122980216815-eu-central-1` |
-| cloudox-demo-cloudtrail-122980216815-eu-central-1 | AWS::S3::Bucket | Encrypted (aws:kms) | Customer-managed (KMS) | d1b59baf-b18a-b78f-1a08-7254c874d325 | Verified | `cloudox-demo-cloudtrail-122980216815-eu-central-1` |
-| cloudox-demo-config-122980216815-eu-central-1 | AWS::S3::Bucket | Encrypted (aws:kms) | Customer-managed (KMS) | d1b59baf-b18a-b78f-1a08-7254c874d325 | Verified | `cloudox-demo-config-122980216815-eu-central-1` |
+| cloudox-demo-cloudtrail-122980216815-eu-central-1 | AWS::S3::Bucket | Encrypted (aws:kms) | KMS (key type unknown) | d1b59baf-b18a-b78f-1a08-7254c874d325 | Verified | `cloudox-demo-cloudtrail-122980216815-eu-central-1` |
+| cloudox-demo-config-122980216815-eu-central-1 | AWS::S3::Bucket | Encrypted (aws:kms) | KMS (key type unknown) | d1b59baf-b18a-b78f-1a08-7254c874d325 | Verified | `cloudox-demo-config-122980216815-eu-central-1` |
 | cloudox-demo-sandbox-161388682021-eu-central-1 | AWS::S3::Bucket | Encrypted (AES256) | AWS-managed | — | Verified | `cloudox-demo-sandbox-161388682021-eu-central-1` |
 | cloudox-demo-sandbox-abandoned-161388682021-eu-central-1 | AWS::S3::Bucket | Encrypted (AES256) | AWS-managed | — | Verified | `cloudox-demo-sandbox-abandoned-161388682021-eu-central-1` |
 | cloudox-demo-atlas-dev-app-105769365151-eu-central-1 | AWS::S3::Bucket | Encrypted (AES256) | AWS-managed | — | Verified | `cloudox-demo-atlas-dev-app-105769365151-eu-central-1` |
-| cloudox-demo-atlas-prod-app-122122642149-eu-central-1 | AWS::S3::Bucket | Encrypted (aws:kms) | Customer-managed (KMS) | 1ac02cc5-a23f-75da-30c9-99c095a072fa | Verified | `cloudox-demo-atlas-prod-app-122122642149-eu-central-1` |
-| cloudox-demo-atlas-prod-dr-snapshots-122122642149-us-east-1 | AWS::S3::Bucket | Encrypted (aws:kms) | Customer-managed (KMS) | c7e5f429-9c4e-a068-d93a-52ebe27c0564 | Verified | `cloudox-demo-atlas-prod-dr-snapshots-122122642149-us-east-1` |
+| cloudox-demo-atlas-prod-app-122122642149-eu-central-1 | AWS::S3::Bucket | Encrypted (aws:kms) | KMS (key type unknown) | 1ac02cc5-a23f-75da-30c9-99c095a072fa | Verified | `cloudox-demo-atlas-prod-app-122122642149-eu-central-1` |
+| cloudox-demo-atlas-prod-dr-snapshots-122122642149-us-east-1 | AWS::S3::Bucket | Encrypted (aws:kms) | KMS (key type unknown) | c7e5f429-9c4e-a068-d93a-52ebe27c0564 | Verified | `cloudox-demo-atlas-prod-dr-snapshots-122122642149-us-east-1` |
 
 > Encryption field not collected for this resource.
 

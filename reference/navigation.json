@@ -1,7 +1,7 @@
 {
-  "content_hash": "7433b50ef14d5ffaa4a1862accd8b20751d45154a75b549ee34222a0f6701bb1",
+  "content_hash": "b09b9888494a18aee16fdb64d9048432d6abbabd485b54f0420c2160ee50ceeb",
   "errors": {},
-  "generated_at": "2026-06-23T09:14:21.444503+00:00",
+  "generated_at": "2026-06-23T15:06:22.153402+00:00",
   "index_relpath": "reference/README.md",
   "kind": "reference-navigation",
   "provider": "aws",
@@ -10,6 +10,7 @@
     {
       "anchor": "network-routing-reference",
       "category": "network",
+      "confidence": "Verified",
       "displayed_row_count": 39,
       "empty": false,
       "key": "network-routing",
@@ -22,6 +23,7 @@
     {
       "anchor": "connectivity-reference",
       "category": "network",
+      "confidence": "Likely",
       "displayed_row_count": 1,
       "empty": false,
       "key": "connectivity",
@@ -34,6 +36,7 @@
     {
       "anchor": "security-flow-reference-ingress-only",
       "category": "security",
+      "confidence": "Verified",
       "displayed_row_count": 24,
       "empty": false,
       "key": "security-flows",
@@ -46,6 +49,7 @@
     {
       "anchor": "public-exposure-reference",
       "category": "security",
+      "confidence": "Assumed",
       "displayed_row_count": 9,
       "empty": false,
       "key": "public-exposure",
@@ -58,6 +62,7 @@
     {
       "anchor": "service-dependency-reference",
       "category": "data",
+      "confidence": "Verified",
       "displayed_row_count": 10,
       "empty": false,
       "key": "service-dependencies",
@@ -70,6 +75,7 @@
     {
       "anchor": "identity-and-trust-reference",
       "category": "identity",
+      "confidence": "Verified",
       "displayed_row_count": 8,
       "empty": false,
       "key": "identity-trust",
@@ -82,6 +88,7 @@
     {
       "anchor": "dns-zones-reference",
       "category": "dns",
+      "confidence": "Verified",
       "displayed_row_count": 1,
       "empty": false,
       "key": "dns",
@@ -94,6 +101,7 @@
     {
       "anchor": "encryption-reference",
       "category": "security",
+      "confidence": "Unknown",
       "displayed_row_count": 14,
       "empty": false,
       "key": "encryption",
@@ -106,6 +114,7 @@
     {
       "anchor": "tagging-reference",
       "category": "governance",
+      "confidence": "Unknown",
       "displayed_row_count": 20,
       "empty": false,
       "key": "tagging",

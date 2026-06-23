@@ -1099,12 +1099,12 @@
     {
       "audience": "Engineers, architects, consultants & security reviewers \u2014 deterministic inventory and relationship tables straight from the knowledge graph.",
       "confidence_display": "minimal",
-      "content_hash": "7433b50ef14d5ffaa4a1862accd8b20751d45154a75b549ee34222a0f6701bb1",
+      "content_hash": "b09b9888494a18aee16fdb64d9048432d6abbabd485b54f0420c2160ee50ceeb",
       "depth": "detailed",
       "display_name": "Reference",
       "kind": "reference",
       "output_relpath": "reference/README.md",
-      "overall_confidence": "Verified",
+      "overall_confidence": "Unknown",
       "persona_questions": [
         "What route tables, gateways, and peering control network paths?",
         "Which security group rules permit ingress, and from where?",
@@ -1127,7 +1127,7 @@
         },
         {
           "anchor": "connectivity-reference",
-          "confidence": "Verified",
+          "confidence": "Likely",
           "empty": false,
           "entity_count": 1,
           "key": "connectivity",
@@ -1151,7 +1151,7 @@
         },
         {
           "anchor": "public-exposure-reference",
-          "confidence": "Verified",
+          "confidence": "Assumed",
           "empty": false,
           "entity_count": 9,
           "key": "public-exposure",
@@ -1199,7 +1199,7 @@
         },
         {
           "anchor": "encryption-reference",
-          "confidence": "Verified",
+          "confidence": "Unknown",
           "empty": false,
           "entity_count": 14,
           "key": "encryption",
@@ -1211,7 +1211,7 @@
         },
         {
           "anchor": "tagging-reference",
-          "confidence": "Verified",
+          "confidence": "Unknown",
           "empty": false,
           "entity_count": 20,
           "key": "tagging",

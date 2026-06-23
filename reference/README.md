@@ -6,7 +6,7 @@
 
 ---
 
-**Audience:** Engineers, architects, consultants & security reviewers — deterministic inventory and relationship tables straight from the knowledge graph. · **Overall confidence:** Verified
+**Audience:** Engineers, architects, consultants & security reviewers — deterministic inventory and relationship tables straight from the knowledge graph. · **Overall confidence:** Unknown
 
 This view is split into focused sections — each is a standalone page. Read them in order, or jump to the question you care about.
 
